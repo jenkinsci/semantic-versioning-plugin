@@ -10,7 +10,7 @@
       When submitted, it will be passed to the corresponding constructor parameter.
     -->
     <f:entry
-            default="${descriptor.getDefaultEnvironmentVariableName()}"
+            value="${descriptor.getDefaultEnvironmentVariableName()}"
             title="Environment Variable Name"
             field="environmentVariableName"
             help="/plugin/SemanticVersioning/help-environmentVariableName.html">
