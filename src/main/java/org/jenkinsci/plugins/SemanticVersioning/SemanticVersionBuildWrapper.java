@@ -1,3 +1,27 @@
+/*
+ * The MIT License
+ *
+ * Copyright (c) 2014, Steve Wagner
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
 package org.jenkinsci.plugins.SemanticVersioning;
 
 import hudson.EnvVars;
@@ -33,7 +57,7 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
     public SemanticVersionBuildWrapper(String environmentVariableName, String semanticVersionFilename) {
         System.out.println("### SemanticVersionBuildWrapper");
         this.environmentVariableName = environmentVariableName;
-        this.semanticVersionFilename = semanticVersionFilename;
+        //this.semanticVersionFilename = semanticVersionFilename;
     }
 
 
@@ -71,6 +95,7 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
             @Override
             public void buildEnvVars(Map<String, String> env) {
                 env.put(getEnvironmentVariableName(), reportedVersion);
+                env.put("SJW_STANDARD_PROPERTY", "CIROQUE");
             }
         };
     }
@@ -78,9 +103,10 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
     private void writeVersionToFile(AbstractBuild build, BuildListener listener, String reportedVersion) {
         String filename = getSemanticVersionFilename();
         if(filename != null && filename.length() > 0) {
-            File file = new File(build.getWorkspace() + getSemanticVersionFilename());
+            File file = new File(build.getArtifactsDir() + "/" + filename);
+            System.out.println(build.getArtifactsDir() + "/" + filename);
             try {
-                FileUtils.writeStringToFile(file, reportedVersion);
+                FileUtils.writeStringToFile(file, reportedVersion + "\n");
             } catch (IOException e) {
                 getLogger().println("Exception writing version to file: " + e);
             }

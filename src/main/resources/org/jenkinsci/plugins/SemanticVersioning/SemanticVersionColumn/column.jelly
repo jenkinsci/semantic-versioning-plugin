@@ -22,4 +22,9 @@
   THE SOFTWARE.
 -->
 
-<div>The name of the file to which the current semantic version will be written.</div>
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core">
+    <j:set var="semver" value="${SEMANTIC_APP_VERSION}"/>
+    <j:set var="job" value="${job}"/>
+    <td>${it.getSemanticVersion(semver, job)}</td>
+</j:jelly>
