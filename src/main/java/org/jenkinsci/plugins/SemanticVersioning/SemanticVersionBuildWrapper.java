@@ -160,7 +160,6 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
         logger = printStream;
     }
 
-    @Extension
     public static final DescriptorImpl descriptor = new DescriptorImpl();
 
     @Override
