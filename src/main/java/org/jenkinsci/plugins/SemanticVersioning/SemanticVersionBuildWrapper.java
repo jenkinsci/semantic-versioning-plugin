@@ -120,9 +120,10 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
             sbtAppVersion = buildScalaParser.extractAppVersion(path);
         } catch (IOException e) {
             getLogger().println("EXCEPTION: " + e);
-        } catch (InvalidSbtBuildFileFormatException e) {
+        } catch (InvalidBuildFileFormatException e) {
             getLogger().println("EXCEPTION: " + e);
         }
+
         return sbtAppVersion;
     }
 

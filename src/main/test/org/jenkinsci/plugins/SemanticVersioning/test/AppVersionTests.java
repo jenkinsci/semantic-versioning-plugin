@@ -6,7 +6,7 @@ import org.jvnet.hudson.test.WithoutJenkins;
 
 import static org.junit.Assert.*;
 
-public class VersionStringParserTests {
+public class AppVersionTests {
 
     @Test
     @WithoutJenkins

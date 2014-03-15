@@ -24,8 +24,8 @@
 
 package org.jenkinsci.plugins.SemanticVersioning;
 
-public class InvalidSbtBuildFileFormatException extends Exception {
-    public InvalidSbtBuildFileFormatException(String message) {
+public class InvalidBuildFileFormatException extends Exception {
+    public InvalidBuildFileFormatException(String message) {
         super(message);
     }
 }
