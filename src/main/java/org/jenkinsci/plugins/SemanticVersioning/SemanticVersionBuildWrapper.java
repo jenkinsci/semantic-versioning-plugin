@@ -50,14 +50,12 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
     private static final String DEFAULT_ENVIRONMENT_VARIABLE_NAME = "SEMANTIC_APP_VERSION";
     private static final String MISSING_BUILD_NUMBER = "-1";
     private String environmentVariableName = DEFAULT_ENVIRONMENT_VARIABLE_NAME;
-    private String semanticVersionFilename = ".semanticVersion";
     private static PrintStream logger = System.out;
 
     @DataBoundConstructor
-    public SemanticVersionBuildWrapper(String environmentVariableName, String semanticVersionFilename) {
+    public SemanticVersionBuildWrapper(String environmentVariableName) {
         System.out.println("### SemanticVersionBuildWrapper");
         this.environmentVariableName = environmentVariableName;
-        //this.semanticVersionFilename = semanticVersionFilename;
     }
 
 
@@ -73,7 +71,7 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
      * Used from <tt>config.jelly</tt>.
      */
     public String getSemanticVersionFilename() {
-        return semanticVersionFilename;
+        return ".semanticVersion";
     }
 
     @Override
@@ -95,7 +93,6 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
             @Override
             public void buildEnvVars(Map<String, String> env) {
                 env.put(getEnvironmentVariableName(), reportedVersion);
-                env.put("SJW_STANDARD_PROPERTY", "CIROQUE");
             }
         };
     }

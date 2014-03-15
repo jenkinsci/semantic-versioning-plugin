@@ -40,10 +40,4 @@
             help="/plugin/SemanticVersioning/help-environmentVariableName.html">
         <f:textbox />
     </f:entry>
-    <f:entry
-            title="Filename"
-            field="semanticVersionFilename"
-            help="/plugin/SemanticVersioning/help-filename.html">
-        <f:textbox />
-    </f:entry>
 </j:jelly>

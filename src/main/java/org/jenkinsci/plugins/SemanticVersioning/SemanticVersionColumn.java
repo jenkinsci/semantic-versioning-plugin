@@ -26,6 +26,7 @@ package org.jenkinsci.plugins.SemanticVersioning;
 
 import hudson.EnvVars;
 import hudson.Extension;
+import hudson.model.AbstractItem;
 import hudson.model.Descriptor;
 import hudson.model.Job;
 import hudson.model.Run;
@@ -45,6 +46,10 @@ public class SemanticVersionColumn extends ListViewColumn {
     public String getSemanticVersion(String semver, Job job) throws IOException, InterruptedException {
 
         String semanticVersion = semver;
+
+        AbstractItem abstractItem = job;
+        System.out.println(">>>>> " + abstractItem.getClass().getSimpleName());
+        System.out.println(">>>>> " + abstractItem.getPronoun());
 
         if(semanticVersion == null || semanticVersion.length() == 0) {
 
