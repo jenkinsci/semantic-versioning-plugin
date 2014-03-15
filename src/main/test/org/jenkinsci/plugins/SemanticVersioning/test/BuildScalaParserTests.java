@@ -1,9 +1,11 @@
 package org.jenkinsci.plugins.SemanticVersioning.test;
 
 import org.apache.commons.io.FileUtils;
-import org.jenkinsci.plugins.SemanticVersioning.BuildScalaParser;
+import org.jenkinsci.plugins.SemanticVersioning.AppVersion;
+import org.jenkinsci.plugins.SemanticVersioning.parsing.BuildScalaParser;
 import org.jenkinsci.plugins.SemanticVersioning.InvalidSbtBuildFileFormatException;
 import org.junit.Test;
+import org.jvnet.hudson.test.WithoutJenkins;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -19,10 +21,13 @@ public class BuildScalaParserTests {
     private final String version = "1.2.3-SNAPSHOT";
 
     @Test
+    @WithoutJenkins
     public void testBuildFileNotFound() {
+        System.out.println("####> testBuildFileNotFound");
         final String filename = "/non/existent/filename";
         try {
-            BuildScalaParser.extractAppVersion(filename);
+            BuildScalaParser buildScalaParser = new BuildScalaParser();
+            buildScalaParser.extractAppVersion(filename);
             fail("FileNotFoundException should have been thrown!");
         } catch (FileNotFoundException e) {
             assertEquals("'" + filename + "' was not found.", e.getMessage());
@@ -32,12 +37,14 @@ public class BuildScalaParserTests {
     }
 
     @Test
+    @WithoutJenkins
     public void testBuildFileFoundNotValidBuildFile() {
+        System.out.println("####> testBuildFileFoundNotValidBuildFile");
         final String filename = "/tmp/InvalidBuild.scala";
         try {
             generateInvalidBuildFile(filename);
-            BuildScalaParser.extractAppVersion(filename);
-
+            BuildScalaParser buildScalaParser = new BuildScalaParser();
+            buildScalaParser.extractAppVersion(filename);
         } catch (InvalidSbtBuildFileFormatException e) {
             assertEquals("'" + filename + "' is not a valid SBT Build file.", e.getMessage());
         } catch (Exception e) {
@@ -46,12 +53,15 @@ public class BuildScalaParserTests {
     }
 
     @Test
+    @WithoutJenkins
     public void testBuildFileFoundAndValid() throws IOException, InvalidSbtBuildFileFormatException {
+        System.out.println("####> testBuildFileFoundAndValid");
         final String filename = "/tmp/Build.scala";
         generateValidBuildFile(filename);
-        String parsedVersion = BuildScalaParser.extractAppVersion(filename);
+        BuildScalaParser buildScalaParser = new BuildScalaParser();
+        AppVersion parsedVersion = buildScalaParser.extractAppVersion(filename);
 
-        assertEquals(version, parsedVersion);
+        assertEquals(version, parsedVersion.toString());
     }
 
     private void generateInvalidBuildFile(String filename) throws IOException {

@@ -12,6 +12,8 @@ public class AppVersion {
     private int build;
     private final boolean isSnapshot;
 
+    public static final AppVersion EmptyVersion = new AppVersion(0, 0, 0, false);
+
     public static AppVersion parse(String versionString) {
         String[] parts = versionString.split("[\\.-]");
 

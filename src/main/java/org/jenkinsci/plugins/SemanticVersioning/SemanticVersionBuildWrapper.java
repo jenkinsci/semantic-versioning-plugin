@@ -12,6 +12,7 @@ import hudson.tasks.BuildWrapperDescriptor;
 import hudson.util.FormValidation;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.FileUtils;
+import org.jenkinsci.plugins.SemanticVersioning.parsing.BuildScalaParser;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
@@ -55,13 +56,12 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
     public Environment setUp(AbstractBuild build, Launcher launcher, BuildListener listener) {
         setLogger(listener.getLogger());
         getLogger().println("### SemanticVersionBuildWrapper::setUp");
-        String sbtAppVersion = getAppVersion(build, listener);
+        AppVersion appVersion = getAppVersion(build, listener);
         String buildNumber = getJenkinsBuildNumber(build);
 
-        AppVersion appVersion = AppVersion.parse(sbtAppVersion);
         appVersion.setBuild(Integer.parseInt(buildNumber));
 
-        getLogger().println("appVersion found to be: {" + getEnvironmentVariableName() + ": " + sbtAppVersion + ", buildNumber: " + buildNumber + ", combined: " + appVersion.toString() + "}\n");
+        getLogger().println("appVersion found to be: {" + getEnvironmentVariableName() + ": " + appVersion + ", buildNumber: " + buildNumber + ", combined: " + appVersion.toString() + "}\n");
 
         final String reportedVersion = appVersion.toString();
 
@@ -87,13 +87,14 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
         }
     }
 
-    private String getAppVersion(AbstractBuild build, BuildListener listener) {
+    private AppVersion getAppVersion(AbstractBuild build, BuildListener listener) {
         getLogger().println("### SemanticVersionBuildWrapper::getAppVersion");
-        String sbtAppVersion = "";
+        AppVersion sbtAppVersion = AppVersion.EmptyVersion;
         String path = build.getWorkspace() + "/project/Build.scala";
+        BuildScalaParser buildScalaParser = new BuildScalaParser();
 
         try {
-            sbtAppVersion = BuildScalaParser.extractAppVersion(path);
+            sbtAppVersion = buildScalaParser.extractAppVersion(path);
         } catch (IOException e) {
             getLogger().println("EXCEPTION: " + e);
         } catch (InvalidSbtBuildFileFormatException e) {

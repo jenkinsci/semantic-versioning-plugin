@@ -1,6 +1,8 @@
-package org.jenkinsci.plugins.SemanticVersioning;
+package org.jenkinsci.plugins.SemanticVersioning.parsing;
 
 import org.apache.commons.io.FileUtils;
+import org.jenkinsci.plugins.SemanticVersioning.AppVersion;
+import org.jenkinsci.plugins.SemanticVersioning.InvalidSbtBuildFileFormatException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -8,9 +10,9 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class BuildScalaParser {
+public class BuildScalaParser implements BuildDefinitionParser {
 
-    public static String extractAppVersion(String filename) throws IOException, InvalidSbtBuildFileFormatException {
+    public AppVersion extractAppVersion(String filename) throws InvalidSbtBuildFileFormatException, IOException {
         File file = new File(filename);
         if(file.exists()) {
 
@@ -26,7 +28,7 @@ public class BuildScalaParser {
                     version = matcher.toMatchResult().group(1);
                 }
 
-                return version;
+                return AppVersion.parse(version);
 
             } else {
                 throw new InvalidSbtBuildFileFormatException("'" + filename + "' is not a valid SBT Build file.");
