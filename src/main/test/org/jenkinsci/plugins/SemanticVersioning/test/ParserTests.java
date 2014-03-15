@@ -1,3 +1,27 @@
+/*
+ * The MIT License
+ *
+ * Copyright (c) 2014, Steve Wagner
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
 package org.jenkinsci.plugins.SemanticVersioning.test;
 
 import org.apache.commons.io.FileUtils;
@@ -25,8 +49,8 @@ public abstract class ParserTests {
         System.out.println("####> testBuildFileNotFound");
         final String filename = "/non/existent/filename";
         try {
-            BuildDefinitionParser buildParser = getParser();
-            buildParser.extractAppVersion(filename);
+            BuildDefinitionParser buildParser = getParser(filename);
+            buildParser.extractAppVersion();
             fail("FileNotFoundException should have been thrown!");
         } catch (FileNotFoundException e) {
             assertEquals("'" + filename + "' was not found.", e.getMessage());
@@ -42,8 +66,8 @@ public abstract class ParserTests {
         final String filename = "/tmp/InvalidBuild.test";
         try {
             generateInvalidBuildFile(filename);
-            BuildDefinitionParser buildParser = getParser();
-            buildParser.extractAppVersion(filename);
+            BuildDefinitionParser buildParser = getParser(filename);
+            buildParser.extractAppVersion();
         } catch (InvalidBuildFileFormatException e) {
             assertEquals(getExpectedInvalidBuildFileFormatExceptionMessage(filename), e.getMessage());
         } catch (Exception e) {
@@ -58,8 +82,8 @@ public abstract class ParserTests {
         final String filename = "/tmp/missingVersionBuild.test";
         try {
             generateBuildFileWithMissingVersion(filename);
-            BuildDefinitionParser buildParser = getParser();
-            buildParser.extractAppVersion(filename);
+            BuildDefinitionParser buildParser = getParser(filename);
+            buildParser.extractAppVersion();
         } catch (InvalidBuildFileFormatException e) {
             assertEquals("No version information found in " + filename, e.getMessage());
         } catch (Exception e) {
@@ -73,13 +97,13 @@ public abstract class ParserTests {
         System.out.println("####> testBuildFileFoundAndValid");
         final String filename = "/tmp/Build.test";
         generateValidBuildFile(filename);
-        BuildDefinitionParser buildParser = getParser();
-        AppVersion parsedVersion = buildParser.extractAppVersion(filename);
+        BuildDefinitionParser buildParser = getParser(filename);
+        AppVersion parsedVersion = buildParser.extractAppVersion();
 
         assertEquals(version, parsedVersion.toString());
     }
 
-    protected abstract BuildDefinitionParser getParser();
+    protected abstract BuildDefinitionParser getParser(String filename);
     protected abstract void generateInvalidBuildFile(String filename) throws IOException;
     protected abstract void generateValidBuildFile(String filename) throws IOException;
     protected abstract void generateBuildFileWithMissingVersion(String filename) throws IOException;

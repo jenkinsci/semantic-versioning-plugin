@@ -30,5 +30,5 @@ import org.jenkinsci.plugins.SemanticVersioning.InvalidBuildFileFormatException;
 import java.io.IOException;
 
 public interface BuildDefinitionParser {
-    AppVersion extractAppVersion(String filename) throws IOException, InvalidBuildFileFormatException;
+    AppVersion extractAppVersion() throws IOException, InvalidBuildFileFormatException;
 }

@@ -36,7 +36,13 @@ import java.util.regex.Pattern;
 
 public class BuildScalaParser implements BuildDefinitionParser {
 
-    public AppVersion extractAppVersion(String filename) throws InvalidBuildFileFormatException, IOException {
+    private final String filename;
+
+    public BuildScalaParser(String filename) {
+        this.filename = filename;
+    }
+
+    public AppVersion extractAppVersion() throws InvalidBuildFileFormatException, IOException {
         File file = new File(filename);
         if(file.exists()) {
 

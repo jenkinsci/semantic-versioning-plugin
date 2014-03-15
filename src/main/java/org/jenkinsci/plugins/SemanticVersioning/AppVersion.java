@@ -28,15 +28,11 @@ public class AppVersion {
     private static final String SNAPSHOT = "SNAPSHOT";
     private final int major;
     private final int minor;
-
-    public void setBuild(int build) {
-        this.build = build;
-    }
+    private final String original;
 
     private int build;
     private final boolean isSnapshot;
-
-    public static final AppVersion EmptyVersion = new AppVersion(0, 0, 0, false);
+    public static final AppVersion EmptyVersion = new AppVersion(0, 0, 0, false, "");
 
     public static AppVersion parse(String versionString) {
         String[] parts = versionString.split("[\\.-]");
@@ -58,15 +54,16 @@ public class AppVersion {
             isSnapshot = parts[3].equals(SNAPSHOT);
         }
 
-        return new AppVersion(major, minor, build, isSnapshot);
+        return new AppVersion(major, minor, build, isSnapshot, versionString);
     }
 
-    private AppVersion(int major, int minor, int build, boolean isSnapshot) {
+    private AppVersion(int major, int minor, int build, boolean isSnapshot, String original) {
         this.major = major;
         this.minor = minor;
 
         this.isSnapshot = isSnapshot;
         this.build = build;
+        this.original = original;
     }
 
     public int getMajor() {
@@ -77,8 +74,16 @@ public class AppVersion {
         return minor;
     }
 
+    public String getOriginal() {
+        return this.original;
+    }
+
     public boolean isSnapshot() {
         return isSnapshot;
+    }
+
+    public void setBuild(int build) {
+        this.build = build;
     }
 
     public int getBuild() {

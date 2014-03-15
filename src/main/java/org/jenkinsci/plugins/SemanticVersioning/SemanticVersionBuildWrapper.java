@@ -26,6 +26,7 @@ package org.jenkinsci.plugins.SemanticVersioning;
 
 import hudson.EnvVars;
 import hudson.Extension;
+import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
@@ -36,7 +37,9 @@ import hudson.tasks.BuildWrapperDescriptor;
 import hudson.util.FormValidation;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.FileUtils;
+import org.jenkinsci.plugins.SemanticVersioning.parsing.BuildDefinitionParser;
 import org.jenkinsci.plugins.SemanticVersioning.parsing.BuildScalaParser;
+import org.jenkinsci.plugins.SemanticVersioning.parsing.PomParser;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
@@ -44,6 +47,8 @@ import org.kohsuke.stapler.StaplerRequest;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
 
 public class SemanticVersionBuildWrapper extends BuildWrapper {
@@ -78,16 +83,16 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
     public Environment setUp(AbstractBuild build, Launcher launcher, BuildListener listener) {
         setLogger(listener.getLogger());
         getLogger().println("### SemanticVersionBuildWrapper::setUp");
-        AppVersion appVersion = getAppVersion(build, listener);
+        AppVersion appVersion = getAppVersion(build);
         String buildNumber = getJenkinsBuildNumber(build);
 
         appVersion.setBuild(Integer.parseInt(buildNumber));
 
-        getLogger().println("appVersion found to be: {" + getEnvironmentVariableName() + ": " + appVersion + ", buildNumber: " + buildNumber + ", combined: " + appVersion.toString() + "}\n");
+        getLogger().println("### SemanticVersionBuildWrapper::setUp -> appVersion found to be: {" + getEnvironmentVariableName() + ": " + appVersion.getOriginal() + ", buildNumber: " + buildNumber + ", combined: " + appVersion.toString() + "}\n");
 
         final String reportedVersion = appVersion.toString();
 
-        writeVersionToFile(build, listener, reportedVersion);
+        writeVersionToFile(build, reportedVersion);
 
         return new Environment() {
             @Override
@@ -97,7 +102,7 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
         };
     }
 
-    private void writeVersionToFile(AbstractBuild build, BuildListener listener, String reportedVersion) {
+    private void writeVersionToFile(AbstractBuild build, String reportedVersion) {
         String filename = getSemanticVersionFilename();
         if(filename != null && filename.length() > 0) {
             File file = new File(build.getArtifactsDir() + "/" + filename);
@@ -110,21 +115,28 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
         }
     }
 
-    private AppVersion getAppVersion(AbstractBuild build, BuildListener listener) {
+    private AppVersion getAppVersion(AbstractBuild build) {
         getLogger().println("### SemanticVersionBuildWrapper::getAppVersion");
-        AppVersion sbtAppVersion = AppVersion.EmptyVersion;
-        String path = build.getWorkspace() + "/project/Build.scala";
-        BuildScalaParser buildScalaParser = new BuildScalaParser();
+        AppVersion appVersion = AppVersion.EmptyVersion;
+        FilePath workspace = build.getWorkspace();
 
-        try {
-            sbtAppVersion = buildScalaParser.extractAppVersion(path);
-        } catch (IOException e) {
-            getLogger().println("EXCEPTION: " + e);
-        } catch (InvalidBuildFileFormatException e) {
-            getLogger().println("EXCEPTION: " + e);
+        Collection<BuildDefinitionParser> parsers = new ArrayList<BuildDefinitionParser>();
+        parsers.add(new BuildScalaParser(workspace + "/project/Build.scala"));
+        parsers.add(new PomParser(workspace + "/pom.xml"));
+
+        for(BuildDefinitionParser parser : parsers) {
+            try {
+                getLogger().println("### SemanticVersionBuildWrapper::getAppVersion -> attempting to parse using " + parser.getClass().getSimpleName());
+                appVersion = parser.extractAppVersion();
+                return appVersion;
+            } catch (IOException e) {
+                getLogger().println("EXCEPTION: " + e);
+            } catch (InvalidBuildFileFormatException e) {
+                getLogger().println("EXCEPTION: " + e);
+            }
         }
 
-        return sbtAppVersion;
+        return appVersion;
     }
 
     private String getJenkinsBuildNumber(AbstractBuild build) {
