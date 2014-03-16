@@ -26,29 +26,21 @@
     </dependencies>
 
     <reporting>
-        <!--<plugins>-->
-            <!--<plugin>-->
-                <!--<groupId>org.codehaus.mojo</groupId>-->
-                <!--<artifactId>findbugs-maven-plugin</artifactId>-->
-                <!--<version>2.5.3</version>-->
-                <!--<configuration>-->
-                    <!--<xmlOutput>true</xmlOutput>-->
-                    <!--<xmlOutputDirectory>target/site</xmlOutputDirectory>-->
-                <!--</configuration>-->
-            <!--</plugin>-->
-        <!--</plugins>-->
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+                <version>2.5.3</version>
+                <configuration>
+                    <xmlOutput>true</xmlOutput>
+                    <xmlOutputDirectory>target/site</xmlOutputDirectory>
+                </configuration>
+            </plugin>
+        </plugins>
     </reporting>
 
     <!-- get every artifact through repo.jenkins-ci.org, which proxies all the artifacts that we need -->
     <repositories>
-        <repository>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <id>central</id>
-            <name>Maven Repository</name>
-            <url>http://mvnrepository.com/</url>
-        </repository>
         <repository>
             <id>repo.jenkins-ci.org</id>
             <url>http://repo.jenkins-ci.org/public/</url>
