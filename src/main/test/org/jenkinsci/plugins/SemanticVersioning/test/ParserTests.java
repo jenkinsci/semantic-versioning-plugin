@@ -25,6 +25,8 @@
 package org.jenkinsci.plugins.SemanticVersioning.test;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jenkinsci.plugins.SemanticVersioning.AppVersion;
 import org.jenkinsci.plugins.SemanticVersioning.InvalidBuildFileFormatException;
 import org.jenkinsci.plugins.SemanticVersioning.parsing.BuildDefinitionParser;
@@ -42,11 +44,10 @@ import static org.junit.Assert.fail;
 public abstract class ParserTests {
 
     protected final String version = "1.2.3-SNAPSHOT";
+    protected final Logger logger = LogManager.getLogger();
 
-    @Test
-    @WithoutJenkins
     public void testBuildFileNotFound() {
-        System.out.println("####> testBuildFileNotFound");
+        logger.debug("####> testBuildFileNotFound");
         final String filename = "/non/existent/filename";
         try {
             BuildDefinitionParser buildParser = getParser(filename);
@@ -62,7 +63,7 @@ public abstract class ParserTests {
     @Test
     @WithoutJenkins
     public void testBuildFileFoundNotValidBuildFile() {
-        System.out.println("####> testBuildFileFoundNotValidBuildFile");
+        logger.debug("####> testBuildFileFoundNotValidBuildFile");
         final String filename = "/tmp/InvalidBuild.test";
         try {
             generateInvalidBuildFile(filename);
@@ -78,7 +79,7 @@ public abstract class ParserTests {
     @Test
     @WithoutJenkins
     public void testValidBuildDefinitionWithMissingVersion() {
-        System.out.println("####> testValidBuildDefinitionWithMissingVersion");
+        logger.debug("####> testValidBuildDefinitionWithMissingVersion");
         final String filename = "/tmp/missingVersionBuild.test";
         try {
             generateBuildFileWithMissingVersion(filename);
@@ -94,7 +95,7 @@ public abstract class ParserTests {
     @Test
     @WithoutJenkins
     public void testBuildFileFoundAndValid() throws IOException, InvalidBuildFileFormatException {
-        System.out.println("####> testBuildFileFoundAndValid");
+        logger.debug("####> testBuildFileFoundAndValid");
         final String filename = "/tmp/Build.test";
         generateValidBuildFile(filename);
         BuildDefinitionParser buildParser = getParser(filename);

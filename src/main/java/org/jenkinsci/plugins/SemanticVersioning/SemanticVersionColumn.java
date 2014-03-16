@@ -33,12 +33,19 @@ import hudson.model.Run;
 import hudson.views.ListViewColumn;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.kohsuke.stapler.StaplerRequest;
 
 import java.io.File;
 import java.io.IOException;
 
 public class SemanticVersionColumn extends ListViewColumn {
+
+    public static final String UNKNOWN_VERSION = "Unknown";
+    public static final String SEMANTIC_VERSION_COLUMN_DISPLAY_NAME = "Semantic Version";
+    public static final String SEMANTIC_VERSION_FILENAME = "/.semanticVersion";
+    private static Logger logger = LogManager.getLogger(AppVersion.class);
 
     @Extension
     public static final Descriptor<ListViewColumn> descriptor = new DescriptorImpl();
@@ -48,26 +55,26 @@ public class SemanticVersionColumn extends ListViewColumn {
         String semanticVersion = semver;
 
         AbstractItem abstractItem = job;
-        System.out.println(">>>>> " + abstractItem.getClass().getSimpleName());
-        System.out.println(">>>>> " + abstractItem.getPronoun());
+        logger.debug("Job simple name -> " + abstractItem.getClass().getSimpleName());
+        logger.debug("Job pronoun -> " + abstractItem.getPronoun());
 
         if(semanticVersion == null || semanticVersion.length() == 0) {
 
             Run run = job.getLastSuccessfulBuild();
             if(run == null) {
-                System.out.println("Last Successful Build not found");
-                semanticVersion = "0";
+                logger.warn("Last Successful Build not found");
+                semanticVersion = UNKNOWN_VERSION;
             } else {
-                File file = new File(run.getArtifactsDir() + "/.semanticVersion");
+                File file = new File(run.getArtifactsDir() + SEMANTIC_VERSION_FILENAME);
                 if(file.exists()) {
                     try {
-                        System.out.println("Reading Semantic Version from: " + file.getAbsolutePath());
+                        logger.debug("Reading Semantic Version from: " + file.getAbsolutePath());
                         semanticVersion = FileUtils.readFileToString(file);
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        logger.error(e);
                     }
                 } else {
-                    semanticVersion = "Unknown";
+                    semanticVersion = UNKNOWN_VERSION;
                 }
             }
         }
@@ -77,14 +84,13 @@ public class SemanticVersionColumn extends ListViewColumn {
 
     private static class DescriptorImpl extends Descriptor<ListViewColumn> {
         @Override
-        public ListViewColumn newInstance(StaplerRequest req,
-                                          JSONObject formData) throws FormException {
+        public ListViewColumn newInstance(StaplerRequest req, JSONObject formData) throws FormException {
             return new SemanticVersionColumn();
         }
 
         @Override
         public String getDisplayName() {
-            return "Semantic Version";
+            return SEMANTIC_VERSION_COLUMN_DISPLAY_NAME;
         }
     }
 }

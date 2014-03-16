@@ -37,6 +37,8 @@ import hudson.tasks.BuildWrapperDescriptor;
 import hudson.util.FormValidation;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jenkinsci.plugins.SemanticVersioning.parsing.BuildDefinitionParser;
 import org.jenkinsci.plugins.SemanticVersioning.parsing.BuildScalaParser;
 import org.jenkinsci.plugins.SemanticVersioning.parsing.PomParser;
@@ -46,7 +48,6 @@ import org.kohsuke.stapler.StaplerRequest;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -55,11 +56,11 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
     private static final String DEFAULT_ENVIRONMENT_VARIABLE_NAME = "SEMANTIC_APP_VERSION";
     private static final String MISSING_BUILD_NUMBER = "-1";
     private String environmentVariableName = DEFAULT_ENVIRONMENT_VARIABLE_NAME;
-    private static PrintStream logger = System.out;
+    private static Logger logger = LogManager.getLogger(AppVersion.class);
 
     @DataBoundConstructor
     public SemanticVersionBuildWrapper(String environmentVariableName) {
-        System.out.println("### SemanticVersionBuildWrapper");
+        logger.info("### SemanticVersionBuildWrapper");
         this.environmentVariableName = environmentVariableName;
     }
 
@@ -68,7 +69,7 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
      * Used from <tt>config.jelly</tt>.
      */
     public String getEnvironmentVariableName() {
-        System.out.println("### SemanticVersionBuildWrapper::getEnvironmentVariableName");
+        logger.info("### SemanticVersionBuildWrapper::getEnvironmentVariableName");
         return this.environmentVariableName;
     }
 
@@ -81,14 +82,13 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
 
     @Override
     public Environment setUp(AbstractBuild build, Launcher launcher, BuildListener listener) {
-        setLogger(listener.getLogger());
-        getLogger().println("### SemanticVersionBuildWrapper::setUp");
+        logger.debug("### SemanticVersionBuildWrapper::setUp");
         AppVersion appVersion = getAppVersion(build);
         String buildNumber = getJenkinsBuildNumber(build);
 
         appVersion.setBuild(Integer.parseInt(buildNumber));
 
-        getLogger().println("### SemanticVersionBuildWrapper::setUp -> appVersion found to be: {" + getEnvironmentVariableName() + ": " + appVersion.getOriginal() + ", buildNumber: " + buildNumber + ", combined: " + appVersion.toString() + "}\n");
+        logger.debug("### SemanticVersionBuildWrapper::setUp -> appVersion found to be: {" + getEnvironmentVariableName() + ": " + appVersion.getOriginal() + ", buildNumber: " + buildNumber + ", combined: " + appVersion.toString() + "}\n");
 
         final String reportedVersion = appVersion.toString();
 
@@ -106,17 +106,17 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
         String filename = getSemanticVersionFilename();
         if(filename != null && filename.length() > 0) {
             File file = new File(build.getArtifactsDir() + "/" + filename);
-            System.out.println(build.getArtifactsDir() + "/" + filename);
+            logger.info(build.getArtifactsDir() + "/" + filename);
             try {
                 FileUtils.writeStringToFile(file, reportedVersion + "\n");
             } catch (IOException e) {
-                getLogger().println("Exception writing version to file: " + e);
+                logger.debug("Exception writing version to file: " + e);
             }
         }
     }
 
     private AppVersion getAppVersion(AbstractBuild build) {
-        getLogger().println("### SemanticVersionBuildWrapper::getAppVersion");
+        logger.debug("### SemanticVersionBuildWrapper::getAppVersion");
         AppVersion appVersion = AppVersion.EmptyVersion;
         FilePath workspace = build.getWorkspace();
 
@@ -126,13 +126,13 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
 
         for(BuildDefinitionParser parser : parsers) {
             try {
-                getLogger().println("### SemanticVersionBuildWrapper::getAppVersion -> attempting to parse using " + parser.getClass().getSimpleName());
+                logger.debug("### SemanticVersionBuildWrapper::getAppVersion -> attempting to parse using " + parser.getClass().getSimpleName());
                 appVersion = parser.extractAppVersion();
                 return appVersion;
             } catch (IOException e) {
-                getLogger().println("EXCEPTION: " + e);
+                logger.error("EXCEPTION: " + e);
             } catch (InvalidBuildFileFormatException e) {
-                getLogger().println("EXCEPTION: " + e);
+                logger.error("EXCEPTION: " + e);
             }
         }
 
@@ -140,24 +140,16 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
     }
 
     private String getJenkinsBuildNumber(AbstractBuild build) {
-        getLogger().println("### SemanticVersionBuildWrapper::getJenkinsBuildNumber");
+        logger.debug("### SemanticVersionBuildWrapper::getJenkinsBuildNumber");
         EnvVars environmentVariables = null;
         try {
             environmentVariables = build.getEnvironment(TaskListener.NULL);
         } catch (IOException e) {
-            getLogger().println("EXCEPTION: " + e);
+            logger.error("EXCEPTION: " + e);
         } catch (InterruptedException e) {
-            getLogger().println("EXCEPTION: " + e);
+            logger.error("EXCEPTION: " + e);
         }
         return environmentVariables != null ? environmentVariables.get("BUILD_NUMBER", MISSING_BUILD_NUMBER) : MISSING_BUILD_NUMBER;
-    }
-
-    private static PrintStream getLogger() {
-        return logger;
-    }
-
-    private void setLogger(PrintStream printStream) {
-        logger = printStream;
     }
 
     public static final DescriptorImpl descriptor = new DescriptorImpl();
@@ -185,7 +177,7 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
          */
         public DescriptorImpl() {
             super(SemanticVersionBuildWrapper.class);
-            getLogger().println("### DescriptorImpl");
+            logger.debug("### DescriptorImpl");
             load();
         }
 
@@ -193,19 +185,19 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
          * This human readable name is used in the configuration screen.
          */
         public String getDisplayName() {
-            getLogger().println("### DescriptorImpl::getDisplayName");
+            logger.debug("### DescriptorImpl::getDisplayName");
             return "Determine Semantic Version for project.";
         }
 
         @Override
         public boolean configure(StaplerRequest req, JSONObject json) throws FormException {
-            getLogger().println("### DescriptorImpl::configure");
+            logger.debug("### DescriptorImpl::configure");
             return super.configure(req, json);
         }
 
         @Override
         public boolean isApplicable(AbstractProject<?, ?> abstractProject) {
-            getLogger().println("### DescriptorImpl::isApplicable");
+            logger.debug("### DescriptorImpl::isApplicable");
             return true;
         }
 
@@ -216,7 +208,7 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
          * @return Indicates the outcome of the validation. This is sent to the browser.
          */
         public FormValidation doCheckEnvironmentVariableName(@QueryParameter String value) {
-            getLogger().println("### DescriptorImpl::doCheckEnvironmentVariableName");
+            logger.debug("### DescriptorImpl::doCheckEnvironmentVariableName");
             if (value.length() == 0)
                 return FormValidation.error("Please set a name");
             if (value.length() < 4)
@@ -225,7 +217,7 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
         }
 
         public String getDefaultEnvironmentVariableName() {
-            getLogger().println("### DescriptorImpl::getDefaultEnvironmentVariableName");
+            logger.debug("### DescriptorImpl::getDefaultEnvironmentVariableName");
             return SemanticVersionBuildWrapper.DEFAULT_ENVIRONMENT_VARIABLE_NAME;
         }
     }
