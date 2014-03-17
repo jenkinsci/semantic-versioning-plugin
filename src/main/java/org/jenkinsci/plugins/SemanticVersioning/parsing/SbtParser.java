@@ -34,38 +34,32 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class BuildScalaParser implements BuildDefinitionParser {
+public class SbtParser implements BuildDefinitionParser {
 
     private final String filename;
 
-    public BuildScalaParser(String filename) {
+    public SbtParser(String filename) {
         this.filename = filename;
     }
 
-    public AppVersion extractAppVersion() throws InvalidBuildFileFormatException, IOException {
+    public AppVersion extractAppVersion() throws IOException, InvalidBuildFileFormatException {
         File file = new File(filename);
         if(file.exists()) {
-
-            Pattern extendsBuild = Pattern.compile(".*extends\\s+Build.*");
             String content = FileUtils.readFileToString(file);
-            if(extendsBuild.matcher(content).find()) {
+            if(content == null || content.length() <= 0) {
+                throw new InvalidBuildFileFormatException("'" + filename + "' is not a valid SBT build definition file.");
+            } else {
                 String version;
-                Pattern pattern = Pattern.compile("val\\s*appVersion\\s*=\\s*\"([^\"]*)\"", Pattern.CASE_INSENSITIVE);
+                Pattern pattern = Pattern.compile("version\\s*:=\\s*\"([^\"]*)\"", Pattern.CASE_INSENSITIVE);
                 Matcher matcher = pattern.matcher(content);
-                boolean found = matcher.find();
-
-                if(found) {
+                if(matcher.find()) {
                     version = matcher.toMatchResult().group(1);
                 } else {
                     throw new InvalidBuildFileFormatException("No version information found in " + filename);
                 }
 
                 return AppVersion.parse(version);
-
-            } else {
-                throw new InvalidBuildFileFormatException("'" + filename + "' is not a valid build definition file.");
             }
-
         } else {
             throw new FileNotFoundException("'" + filename + "' was not found.");
         }

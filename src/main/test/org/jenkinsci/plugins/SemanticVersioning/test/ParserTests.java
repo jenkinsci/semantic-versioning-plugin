@@ -46,6 +46,8 @@ public abstract class ParserTests {
     protected final String version = "1.2.3-SNAPSHOT";
     protected final Logger logger = LogManager.getLogger();
 
+    @Test
+    @WithoutJenkins
     public void testBuildFileNotFound() {
         logger.debug("####> testBuildFileNotFound");
         final String filename = "/non/existent/filename";

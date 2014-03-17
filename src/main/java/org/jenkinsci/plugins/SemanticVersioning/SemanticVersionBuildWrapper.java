@@ -39,9 +39,7 @@ import net.sf.json.JSONObject;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jenkinsci.plugins.SemanticVersioning.parsing.BuildDefinitionParser;
-import org.jenkinsci.plugins.SemanticVersioning.parsing.BuildScalaParser;
-import org.jenkinsci.plugins.SemanticVersioning.parsing.PomParser;
+import org.jenkinsci.plugins.SemanticVersioning.parsing.*;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
@@ -121,8 +119,9 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
         FilePath workspace = build.getWorkspace();
 
         Collection<BuildDefinitionParser> parsers = new ArrayList<BuildDefinitionParser>();
-        parsers.add(new BuildScalaParser(workspace + "/project/Build.scala"));
         parsers.add(new PomParser(workspace + "/pom.xml"));
+        parsers.add(new BuildScalaParser(workspace + "/project/Build.scala"));
+        parsers.add(new SbtParser(workspace + "/build.sbt"));
 
         for(BuildDefinitionParser parser : parsers) {
             try {
