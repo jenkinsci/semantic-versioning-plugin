@@ -65,7 +65,7 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
 
     /**
      * Used from <tt>config.jelly</tt>.
-     * @return String the value of the environment variable name to be used.
+     * @return the value of the environment variable name to be used.
      */
     public String getEnvironmentVariableName() {
         logger.info("### SemanticVersionBuildWrapper::getEnvironmentVariableName");
@@ -74,7 +74,7 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
 
     /**
      * Used from <tt>config.jelly</tt>.
-     * @return String the name of the file in which the semantic version will be stored.
+     * @return the name of the file in which the semantic version will be stored.
      */
     public String getSemanticVersionFilename() {
         return ".semanticVersion";
@@ -166,7 +166,6 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
      * See <tt>src/main/resources/hudson/plugins/hello_world/SbtVersionExtracter/*.jelly</tt>
      * for the actual HTML fragment for the configuration screen.
      */
-
     @Extension // This indicates to Jenkins that this is an implementation of an extension point.
     public static final class DescriptorImpl extends BuildWrapperDescriptor {
 
@@ -182,6 +181,7 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
 
         /**
          * This human readable name is used in the configuration screen.
+         * @return the display name for the plugin
          */
         public String getDisplayName() {
             logger.debug("### DescriptorImpl::getDisplayName");
@@ -215,6 +215,10 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
             return FormValidation.ok();
         }
 
+        /**
+         * Gets the default value for the environment variable name.
+         * @return the default value for the environment variable name.
+         */
         public String getDefaultEnvironmentVariableName() {
             logger.debug("### DescriptorImpl::getDefaultEnvironmentVariableName");
             return SemanticVersionBuildWrapper.DEFAULT_ENVIRONMENT_VARIABLE_NAME;
