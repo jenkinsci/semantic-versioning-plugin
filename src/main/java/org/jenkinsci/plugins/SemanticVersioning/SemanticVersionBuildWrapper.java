@@ -65,6 +65,7 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
 
     /**
      * Used from <tt>config.jelly</tt>.
+     * @return String the value of the environment variable name to be used.
      */
     public String getEnvironmentVariableName() {
         logger.info("### SemanticVersionBuildWrapper::getEnvironmentVariableName");
@@ -73,6 +74,7 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
 
     /**
      * Used from <tt>config.jelly</tt>.
+     * @return String the name of the file in which the semantic version will be stored.
      */
     public String getSemanticVersionFilename() {
         return ".semanticVersion";
@@ -161,8 +163,6 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
     /**
      * descriptor for {@link SemanticVersionBuildWrapper}. Used as a singleton.
      * The class is marked as public so that it can be accessed from views.
-     * <p/>
-     * <p/>
      * See <tt>src/main/resources/hudson/plugins/hello_world/SbtVersionExtracter/*.jelly</tt>
      * for the actual HTML fragment for the configuration screen.
      */
