@@ -62,7 +62,6 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
         this.environmentVariableName = environmentVariableName;
     }
 
-
     /**
      * Used from <tt>config.jelly</tt>.
      * @return the value of the environment variable name to be used.
