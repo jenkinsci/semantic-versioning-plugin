@@ -15,7 +15,11 @@ The latest and greatest source for the SemanticVersioning plugin can be found on
 
 Pull / Feature Requests
 -----
-Both are welcome and will be prioritized and executed as time and resource allows. 
+Both are welcome and will be prioritized and executed as time and resource allows.
+
+Current Build Status
+-----
+[![Build Status](https://jenkins.ci.cloudbees.com/buildStatus/icon?job=plugins/semantic-versioning-plugin)](https://jenkins.ci.cloudbees.com/job/plugins/job/semantic-versioning-plugin/)
 
 [ButlerImage]: http://jenkins-ci.org/sites/default/files/jenkins_logo.png
 [MIT License]: https://github.com/jenkinsci/jenkins/raw/master/LICENSE.txt
