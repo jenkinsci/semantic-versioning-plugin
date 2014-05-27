@@ -152,6 +152,7 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
         return environmentVariables != null ? environmentVariables.get("BUILD_NUMBER", MISSING_BUILD_NUMBER) : MISSING_BUILD_NUMBER;
     }
 
+    @Extension
     public static final DescriptorImpl descriptor = new DescriptorImpl();
 
     @Override
@@ -165,7 +166,6 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
      * See <tt>src/main/resources/hudson/plugins/hello_world/SbtVersionExtracter/*.jelly</tt>
      * for the actual HTML fragment for the configuration screen.
      */
-    @Extension // This indicates to Jenkins that this is an implementation of an extension point.
     public static final class DescriptorImpl extends BuildWrapperDescriptor {
 
         /**
@@ -184,7 +184,7 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
          */
         public String getDisplayName() {
             logger.debug("### DescriptorImpl::getDisplayName");
-            return "Determine Semantic Version for project.";
+            return "Determine Semantic Version for project";
         }
 
         @Override
