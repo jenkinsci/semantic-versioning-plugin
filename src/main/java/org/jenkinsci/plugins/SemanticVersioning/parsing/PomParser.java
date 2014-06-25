@@ -24,10 +24,19 @@
 
 package org.jenkinsci.plugins.SemanticVersioning.parsing;
 
-import org.jenkinsci.plugins.SemanticVersioning.AppVersion;
-import org.jenkinsci.plugins.SemanticVersioning.InvalidBuildFileFormatException;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
+import hudson.Extension;
+import hudson.FilePath;
+import hudson.FilePath.FileCallable;
+import hudson.maven.AbstractMavenBuild;
+import hudson.maven.MavenBuild;
+import hudson.maven.MavenModuleSet;
+import hudson.model.AbstractBuild;
+import hudson.model.Descriptor;
+import hudson.remoting.VirtualChannel;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -36,47 +45,108 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
-public class PomParser implements BuildDefinitionParser {
+import jenkins.model.Jenkins;
 
-    private final String filename;
+import org.jenkinsci.plugins.SemanticVersioning.AbstractSematicParserDescription;
+import org.jenkinsci.plugins.SemanticVersioning.AppVersion;
+import org.jenkinsci.plugins.SemanticVersioning.InvalidBuildFileFormatException;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
-    public PomParser(String filename) {
+@Extension
+public class PomParser extends AbstractBuildDefinitionParser {
 
-        this.filename = filename;
-    }
+	private static final String BUILD_FILE = "pom.xml";
 
-    public AppVersion extractAppVersion() throws IOException, InvalidBuildFileFormatException {
-        File file = new File(filename);
-        if (file.exists()) {
+	public PomParser() {
+	}
 
-            String version = null;
-            DocumentBuilder documentBuilder = null;
-            try {
-                documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-                Document document = documentBuilder.parse(file);
-                XPath xPath = XPathFactory.newInstance().newXPath();
-                XPathExpression expression = xPath.compile("/project/version");
-                version = expression.evaluate(document);
-            } catch (ParserConfigurationException e) {
-                e.printStackTrace();
-            } catch (SAXException e) {
-                e.printStackTrace();
-                throw new InvalidBuildFileFormatException(filename + " is not a valid POM file.");
-            } catch (XPathExpressionException e) {
-                e.printStackTrace();
-            }
+	@Deprecated
+	public PomParser(String filename) {
+	}
 
-            if(version == null || version.length() == 0) {
-                throw new InvalidBuildFileFormatException("No version information found in " + filename);
-            }
+	public AppVersion extractAppVersion(AbstractBuild<?, ?> build)
+			throws IOException, InvalidBuildFileFormatException {
+		String version = null;
 
-            return AppVersion.parse(version);
-        } else {
-            throw new FileNotFoundException("'" + filename + "' was not found.");
-        }
-    }
+		Document document = getPom((AbstractMavenBuild<?, ?>) build);
+		XPath xPath = XPathFactory.newInstance().newXPath();
+		XPathExpression expression;
+		try {
+			expression = xPath.compile("/project/version");
+			version = expression.evaluate(document);
+
+		} catch (XPathExpressionException e) {
+			throw new InvalidBuildFileFormatException(document.getBaseURI()
+					+ " is not a valid POM file.");
+		}
+
+		if (version == null || version.length() == 0) {
+			throw new InvalidBuildFileFormatException(
+					"No version information found in " + document.getBaseURI());
+		}
+		return AppVersion.parse(version);
+	}
+
+	private Document getPom(AbstractMavenBuild<?, ?> mavenBuild)
+			throws InvalidBuildFileFormatException, IOException {
+		FilePath moduleRoot = mavenBuild.getModuleRoot();
+		MavenModuleSet project = (MavenModuleSet) mavenBuild.getProject();
+		FilePath pom = null;
+
+		if (moduleRoot.getName().endsWith(BUILD_FILE)) {
+			pom = moduleRoot;
+		} else {
+			pom = new FilePath(moduleRoot, project.getRootPOM());
+		}
+
+		Document pomDocument = null;
+		try {
+			pomDocument = pom.act(new FileCallable<Document>() {
+
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
+				public Document invoke(File pom, VirtualChannel channel)
+						throws IOException, InterruptedException {
+
+					try {
+						DocumentBuilder documentBuilder = null;
+						documentBuilder = DocumentBuilderFactory.newInstance()
+								.newDocumentBuilder();
+						return documentBuilder.parse(pom);
+
+					} catch (SAXException e) {
+						throw new InterruptedException(pom
+								.getAbsolutePath()
+								+ " is not a valid POM file.");
+					} catch (ParserConfigurationException e) {
+						throw new InterruptedException(pom
+								.getAbsolutePath()
+								+ " is not a valid POM file.");
+					}
+				}
+
+			});
+		} catch (InterruptedException e) {
+			throw new InvalidBuildFileFormatException(e.getMessage());
+		}
+
+		return pomDocument;
+	}
+
+	@SuppressWarnings("unchecked")
+	public Descriptor<BuildDefinitionParser> getDescriptor() {
+		return new AbstractSematicParserDescription() {
+
+			@Override
+			public String getDisplayName() {
+
+				return "Maven Pom Parserer";
+			}
+		};
+	}
 }
