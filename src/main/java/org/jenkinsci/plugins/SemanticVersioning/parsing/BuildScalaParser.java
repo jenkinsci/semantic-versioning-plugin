@@ -87,7 +87,7 @@ public class BuildScalaParser extends AbstractBuildDefinitionParser {
 			@Override
 			public String getDisplayName() {
 				
-				return "Build Scala Parserer";
+				return "Build Scala Parser";
 			}
 		};
 	}

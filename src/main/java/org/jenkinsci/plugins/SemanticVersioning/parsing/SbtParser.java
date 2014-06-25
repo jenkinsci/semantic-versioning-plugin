@@ -27,17 +27,16 @@ package org.jenkinsci.plugins.SemanticVersioning.parsing;
 import hudson.Extension;
 import hudson.model.AbstractBuild;
 import hudson.model.Descriptor;
+import org.apache.commons.io.FileUtils;
+import org.jenkinsci.plugins.SemanticVersioning.AbstractSematicParserDescription;
+import org.jenkinsci.plugins.SemanticVersioning.AppVersion;
+import org.jenkinsci.plugins.SemanticVersioning.InvalidBuildFileFormatException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.commons.io.FileUtils;
-import org.jenkinsci.plugins.SemanticVersioning.AbstractSematicParserDescription;
-import org.jenkinsci.plugins.SemanticVersioning.AppVersion;
-import org.jenkinsci.plugins.SemanticVersioning.InvalidBuildFileFormatException;
 
 @Extension
 public class SbtParser extends AbstractBuildDefinitionParser {
@@ -80,7 +79,7 @@ public class SbtParser extends AbstractBuildDefinitionParser {
 			@Override
 			public String getDisplayName() {
 				
-				return "SBT Scala build parserer";
+				return "SBT Scala build parser";
 			}
 		};
 	}

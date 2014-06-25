@@ -28,31 +28,22 @@ import hudson.Extension;
 import hudson.FilePath;
 import hudson.FilePath.FileCallable;
 import hudson.maven.AbstractMavenBuild;
-import hudson.maven.MavenBuild;
 import hudson.maven.MavenModuleSet;
 import hudson.model.AbstractBuild;
 import hudson.model.Descriptor;
 import hudson.remoting.VirtualChannel;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Map;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-
-import jenkins.model.Jenkins;
-
 import org.jenkinsci.plugins.SemanticVersioning.AbstractSematicParserDescription;
 import org.jenkinsci.plugins.SemanticVersioning.AppVersion;
 import org.jenkinsci.plugins.SemanticVersioning.InvalidBuildFileFormatException;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.*;
+import java.io.File;
+import java.io.IOException;
 
 @Extension
 public class PomParser extends AbstractBuildDefinitionParser {
@@ -145,7 +136,7 @@ public class PomParser extends AbstractBuildDefinitionParser {
 			@Override
 			public String getDisplayName() {
 
-				return "Maven Pom Parserer";
+				return "Maven Pom Parser";
 			}
 		};
 	}
