@@ -26,25 +26,14 @@ package org.jenkinsci.plugins.SemanticVersioning;
 
 import hudson.EnvVars;
 import hudson.Extension;
-import hudson.FilePath;
 import hudson.Launcher;
-import hudson.model.BuildListener;
-import hudson.model.TaskListener;
-import hudson.model.AbstractBuild;
-import hudson.model.AbstractProject;
-import hudson.model.Descriptor.FormException;
+import hudson.model.*;
 import hudson.tasks.BuildWrapper;
 import hudson.tasks.BuildWrapperDescriptor;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Map;
-
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -52,6 +41,10 @@ import org.jenkinsci.plugins.SemanticVersioning.parsing.BuildDefinitionParser;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Map;
 
 public class SemanticVersionBuildWrapper extends BuildWrapper {
 	private static final String DEFAULT_ENVIRONMENT_VARIABLE_NAME = "SEMANTIC_APP_VERSION";
@@ -141,7 +134,7 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
 			try {
 				FileUtils.writeStringToFile(file, reportedVersion + "\n");
 			} catch (IOException e) {
-				logger.debug("Exception writing version to file: " + e);
+				logger.error("Exception writing version to file: " + e);
 			}
 		}
 	}
