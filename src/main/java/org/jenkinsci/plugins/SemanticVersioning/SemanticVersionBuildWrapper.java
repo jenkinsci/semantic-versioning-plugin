@@ -47,19 +47,19 @@ import java.io.IOException;
 import java.util.Map;
 
 public class SemanticVersionBuildWrapper extends BuildWrapper {
-	private static final String DEFAULT_ENVIRONMENT_VARIABLE_NAME = "SEMANTIC_APP_VERSION";
+    private static final String DEFAULT_ENVIRONMENT_VARIABLE_NAME = "SEMANTIC_APP_VERSION";
 	private static final String MISSING_BUILD_NUMBER = "-1";
-	private String environmentVariableName = DEFAULT_ENVIRONMENT_VARIABLE_NAME;
+    public static final String SEMANTIC_VERSION_PLUGIN_DISPLAY_NAME = "Determine Semantic Version for project";
+    private String environmentVariableName = DEFAULT_ENVIRONMENT_VARIABLE_NAME;
 	private static Logger logger = LogManager.getLogger(AppVersion.class);
 	private BuildDefinitionParser parser;
+    private boolean useJenkinsBuildNumber;
 
 	@DataBoundConstructor
-	public SemanticVersionBuildWrapper(String environmentVariableName,
-			String parser) {
-		logger.info("### SemanticVersionBuildWrapper");
+	public SemanticVersionBuildWrapper(String environmentVariableName, String parser) {
 		this.environmentVariableName = environmentVariableName;
 		try {
-			this.parser = (BuildDefinitionParser) Jenkins.getInstance()
+			this.parser = (BuildDefinitionParser)Jenkins.getInstance()
 					.getExtensionList(parser).iterator().next();
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
@@ -71,10 +71,7 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
 	 * 
 	 * @return the value of the environment variable name to be used.
 	 */
-	public String getEnvironmentVariableName() {
-		logger.info("### SemanticVersionBuildWrapper::getEnvironmentVariableName");
-		return this.environmentVariableName;
-	}
+	public String getEnvironmentVariableName() { return this.environmentVariableName; }
 
 	/**
 	 * Used from <tt>config.jelly</tt>.
@@ -85,7 +82,8 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
 	public String getSemanticVersionFilename() {
 		return ".semanticVersion";
 	}
-	
+
+    public boolean getUseJenkinsBuildNumber() { return useJenkinsBuildNumber; }
 	
 	/**
 	 * Used from <tt>config.jelly</tt>.
@@ -98,24 +96,14 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
 	}
 
 	@Override
-	public Environment setUp(AbstractBuild build, Launcher launcher,
-			BuildListener listener) {
-		logger.debug("### SemanticVersionBuildWrapper::setUp");
+	public Environment setUp(AbstractBuild build, Launcher launcher, BuildListener listener) {
 		AppVersion appVersion = getAppVersion(build);
-		String buildNumber = getJenkinsBuildNumber(build);
-
-		appVersion.setBuild(Integer.parseInt(buildNumber));
-
-		logger.debug("### SemanticVersionBuildWrapper::setUp -> appVersion found to be: {"
-				+ getEnvironmentVariableName()
-				+ ": "
-				+ appVersion.getOriginal()
-				+ ", buildNumber: "
-				+ buildNumber
-				+ ", combined: " + appVersion.toString() + "}\n");
+        if(useJenkinsBuildNumber) {
+            String buildNumber = getJenkinsBuildNumber(build);
+            appVersion.setBuild(Integer.parseInt(buildNumber));
+        }
 
 		final String reportedVersion = appVersion.toString();
-
 		writeVersionToFile(build, reportedVersion);
 
 		return new Environment() {
@@ -140,7 +128,6 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
 	}
 
 	private AppVersion getAppVersion(AbstractBuild build) {
-		logger.debug("### SemanticVersionBuildWrapper::getAppVersion");
 		AppVersion appVersion = AppVersion.EmptyVersion;
 		if (this.parser != null) {
 			try {
@@ -159,7 +146,6 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
 	}
 
 	private String getJenkinsBuildNumber(AbstractBuild build) {
-		logger.debug("### SemanticVersionBuildWrapper::getJenkinsBuildNumber");
 		EnvVars environmentVariables = null;
 		try {
 			environmentVariables = build.getEnvironment(TaskListener.NULL);
@@ -194,7 +180,6 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
 		 */
 		public DescriptorImpl() {
 			super(SemanticVersionBuildWrapper.class);
-			logger.debug("### DescriptorImpl");
 			load();
 		}
 
@@ -203,22 +188,15 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
 		 * 
 		 * @return the display name for the plugin
 		 */
-		public String getDisplayName() {
-			logger.debug("### DescriptorImpl::getDisplayName");
-			return "Determine Semantic Version for project";
-		}
+		public String getDisplayName() { return SEMANTIC_VERSION_PLUGIN_DISPLAY_NAME; }
 
 		@Override
-		public boolean configure(StaplerRequest req, JSONObject json)
-				throws FormException {
-			logger.debug("### DescriptorImpl::configure");
-			
+		public boolean configure(StaplerRequest req, JSONObject json) throws FormException {
 			return super.configure(req, json);
 		}
 
 		@Override
 		public boolean isApplicable(AbstractProject<?, ?> abstractProject) {
-			logger.debug("### DescriptorImpl::isApplicable");
 			return true;
 		}
 
@@ -230,9 +208,7 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
 		 * @return Indicates the outcome of the validation. This is sent to the
 		 *         browser.
 		 */
-		public FormValidation doCheckEnvironmentVariableName(
-				@QueryParameter String value) {
-			logger.debug("### DescriptorImpl::doCheckEnvironmentVariableName");
+		public FormValidation doCheckEnvironmentVariableName(@QueryParameter String value) {
 			if (value.isEmpty())
 				return FormValidation.error("Please set a name");
 			if (value.length() < 4)
@@ -241,7 +217,7 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
 		}
 
 		/**
-		 * Generates LisBoxModel for available BuildDefinitionParsers
+		 * Generates ListBoxModel for available BuildDefinitionParsers
 		 * 
 		 * @return available BuildDefinitionParsers as ListBoxModel
 		 */
@@ -262,7 +238,6 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
 		 * @return the default value for the environment variable name.
 		 */
 		public String getDefaultEnvironmentVariableName() {
-			logger.debug("### DescriptorImpl::getDefaultEnvironmentVariableName");
 			return SemanticVersionBuildWrapper.DEFAULT_ENVIRONMENT_VARIABLE_NAME;
 		}
 	}

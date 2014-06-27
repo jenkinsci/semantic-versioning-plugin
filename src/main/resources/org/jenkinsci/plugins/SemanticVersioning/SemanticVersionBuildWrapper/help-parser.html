@@ -22,20 +22,4 @@
   THE SOFTWARE.
 -->
 
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
-    <!--
-      Creates a text field that shows the value of the "name" property.
-      When submitted, it will be passed to the corresponding constructor parameter.
-    -->
-     <f:entry title="Version Number Parser" field="parser">
-        <f:select />
-    </f:entry>
-    <f:entry title="Build Number Source" field="useJenkinsBuildNumber" checked="${descriptor.getUseJenkinsBuildNumber()}">
-        <f:checkbox title="Use Jenkins Build Number" />
-    </f:entry>
-    <f:entry
-            title="Environment Variable Name"
-            field="environmentVariableName">
-        <f:textbox default="${descriptor.getDefaultEnvironmentVariableName()}" />
-    </f:entry>
-</j:jelly>
+<div>Determines which build file parser will be used for the project.</div>
