@@ -53,11 +53,12 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
     private String environmentVariableName = DEFAULT_ENVIRONMENT_VARIABLE_NAME;
 	private static Logger logger = LogManager.getLogger(AppVersion.class);
 	private BuildDefinitionParser parser;
-    private boolean useJenkinsBuildNumber;
+    private boolean useJenkinsBuildNumber = true;
 
 	@DataBoundConstructor
-	public SemanticVersionBuildWrapper(String environmentVariableName, String parser) {
+	public SemanticVersionBuildWrapper(String environmentVariableName, String parser, boolean useJenkinsBuildNumber) {
 		this.environmentVariableName = environmentVariableName;
+        this.useJenkinsBuildNumber = useJenkinsBuildNumber;
 		try {
 			this.parser = (BuildDefinitionParser)Jenkins.getInstance()
 					.getExtensionList(parser).iterator().next();
@@ -83,7 +84,7 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
 		return ".semanticVersion";
 	}
 
-    public boolean getUseJenkinsBuildNumber() { return useJenkinsBuildNumber; }
+    public boolean getUseJenkinsBuildNumber() { return this.useJenkinsBuildNumber; }
 	
 	/**
 	 * Used from <tt>config.jelly</tt>.
@@ -240,5 +241,12 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
 		public String getDefaultEnvironmentVariableName() {
 			return SemanticVersionBuildWrapper.DEFAULT_ENVIRONMENT_VARIABLE_NAME;
 		}
+
+        /**
+         * Gets the default value for the checkbox. The default is to use the Jenkins build number
+         * instead of the build number in the parsed file.
+         * @return true
+         */
+        public boolean getDefaultUseJenkinsBuildNumber() { return true; }
 	}
 }
