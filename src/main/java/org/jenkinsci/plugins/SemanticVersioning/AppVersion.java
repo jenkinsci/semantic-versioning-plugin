@@ -24,8 +24,7 @@
 
 package org.jenkinsci.plugins.SemanticVersioning;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import java.util.logging.Logger;
 
 public class AppVersion {
     private static final String SNAPSHOT = "SNAPSHOT";
@@ -37,10 +36,7 @@ public class AppVersion {
     private final boolean isSnapshot;
     public static final AppVersion EmptyVersion = new AppVersion(0, 0, 0, false, "");
 
-    private static Logger logger = LogManager.getLogger(AppVersion.class);
-
     public static AppVersion parse(String versionString) {
-        logger.debug("given versionString(" + versionString + ")");
         String[] parts = versionString.split("[\\.-]");
 
         int major = Integer.parseInt(parts[0]);
@@ -94,6 +90,16 @@ public class AppVersion {
 
     public int getBuild() {
         return build;
+    }
+
+    public String toJsonString() {
+        return String.format(
+                "{ \"major\": %d, \"minor\": %d, \"build\": %d, \"isSnapshot\": %b, \"originalString\": \"%s\" }",
+                this.major,
+                this.minor,
+                this.build,
+                this.isSnapshot,
+                this.original);
     }
 
     @Override

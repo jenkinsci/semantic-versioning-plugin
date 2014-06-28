@@ -35,7 +35,7 @@ public class BuildScalaParserTests extends ParserTests {
 
     @Override
     protected BuildDefinitionParser getParser(String filename) {
-        return new BuildScalaParser(filename);
+        return new BuildScalaParser();
     }
 
     @Override

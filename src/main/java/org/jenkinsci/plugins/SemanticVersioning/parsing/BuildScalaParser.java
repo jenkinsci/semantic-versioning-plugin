@@ -42,19 +42,14 @@ import java.util.regex.Pattern;
 @Extension
 public class BuildScalaParser extends AbstractBuildDefinitionParser {
 
-    private static final String BUILD_DEFINITION_FILENAME = "Build.scala";
+    private static final String BUILD_DEFINITION_FILENAME = "/project/Build.scala";
 
     public BuildScalaParser() {   }
-    
-    @Deprecated
-    public BuildScalaParser(String filename) {
-        
-    }
 
 	public AppVersion extractAppVersion(AbstractBuild<?,?> build) throws InvalidBuildFileFormatException, IOException {
-        File file = new File(BUILD_DEFINITION_FILENAME);
+        String filename = build.getWorkspace() + BUILD_DEFINITION_FILENAME;
+        File file = new File(filename);
         if(file.exists()) {
-
             Pattern extendsBuild = Pattern.compile(".*extends\\s+Build.*");
             String content = FileUtils.readFileToString(file);
             if(extendsBuild.matcher(content).find()) {

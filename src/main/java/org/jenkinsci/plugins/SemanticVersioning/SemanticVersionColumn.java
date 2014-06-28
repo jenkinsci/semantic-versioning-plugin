@@ -24,54 +24,43 @@
 
 package org.jenkinsci.plugins.SemanticVersioning;
 
-import hudson.EnvVars;
 import hudson.Extension;
-import hudson.model.AbstractItem;
 import hudson.model.Descriptor;
 import hudson.model.Job;
 import hudson.model.Run;
 import hudson.views.ListViewColumn;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.FileUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.kohsuke.stapler.StaplerRequest;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Logger;
 
 public class SemanticVersionColumn extends ListViewColumn {
 
     public static final String UNKNOWN_VERSION = "Unknown";
     public static final String SEMANTIC_VERSION_COLUMN_DISPLAY_NAME = "Semantic Version";
     public static final String SEMANTIC_VERSION_FILENAME = "/.semanticVersion";
-    private static Logger logger = LogManager.getLogger(AppVersion.class);
+    private static Logger logger = Logger.getLogger(String.valueOf(AppVersion.class));
 
     @Extension
     public static final Descriptor<ListViewColumn> descriptor = new DescriptorImpl();
 
     public String getSemanticVersion(String semver, Job job) throws IOException, InterruptedException {
-
         String semanticVersion = semver;
-
-        AbstractItem abstractItem = job;
-        logger.debug("Job simple name -> " + abstractItem.getClass().getSimpleName());
-        logger.debug("Job pronoun -> " + abstractItem.getPronoun());
-
         if(semanticVersion == null || semanticVersion.length() == 0) {
-
             Run run = job.getLastSuccessfulBuild();
             if(run == null) {
-                logger.warn("Last Successful Build not found");
+                logger.warning("Last Successful Build not found");
                 semanticVersion = UNKNOWN_VERSION;
             } else {
                 File file = new File(run.getArtifactsDir() + SEMANTIC_VERSION_FILENAME);
                 if(file.exists()) {
                     try {
-                        logger.debug("Reading Semantic Version from: " + file.getAbsolutePath());
                         semanticVersion = FileUtils.readFileToString(file);
                     } catch (IOException e) {
-                        logger.error(e);
+                        logger.severe(e.toString());
                     }
                 } else {
                     semanticVersion = UNKNOWN_VERSION;

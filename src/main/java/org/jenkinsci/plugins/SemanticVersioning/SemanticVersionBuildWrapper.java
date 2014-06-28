@@ -35,8 +35,6 @@ import hudson.util.ListBoxModel;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.FileUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jenkinsci.plugins.SemanticVersioning.parsing.BuildDefinitionParser;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
@@ -45,13 +43,14 @@ import org.kohsuke.stapler.StaplerRequest;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
+import java.util.logging.Logger;
 
 public class SemanticVersionBuildWrapper extends BuildWrapper {
     private static final String DEFAULT_ENVIRONMENT_VARIABLE_NAME = "SEMANTIC_APP_VERSION";
 	private static final String MISSING_BUILD_NUMBER = "-1";
     public static final String SEMANTIC_VERSION_PLUGIN_DISPLAY_NAME = "Determine Semantic Version for project";
     private String environmentVariableName = DEFAULT_ENVIRONMENT_VARIABLE_NAME;
-	private static Logger logger = LogManager.getLogger(AppVersion.class);
+	private static Logger logger = Logger.getLogger(String  .valueOf(AppVersion.class));
 	private BuildDefinitionParser parser;
     private boolean useJenkinsBuildNumber = true;
 
@@ -102,6 +101,7 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
         if(useJenkinsBuildNumber) {
             String buildNumber = getJenkinsBuildNumber(build);
             appVersion.setBuild(Integer.parseInt(buildNumber));
+            logger.info("### SemanticVersionBuildWrapper::getAppVersion -> using Jenkins Build Number: " + appVersion.toJsonString());
         }
 
 		final String reportedVersion = appVersion.toString();
@@ -119,11 +119,10 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
 		String filename = getSemanticVersionFilename();
 		if (filename != null && filename.length() > 0) {
 			File file = new File(build.getArtifactsDir() + "/" + filename);
-			logger.info(build.getArtifactsDir() + "/" + filename);
 			try {
 				FileUtils.writeStringToFile(file, reportedVersion + "\n");
 			} catch (IOException e) {
-				logger.error("Exception writing version to file: " + e);
+				logger.severe("Exception writing version to file: " + e);
 			}
 		}
 	}
@@ -132,18 +131,19 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
 		AppVersion appVersion = AppVersion.EmptyVersion;
 		if (this.parser != null) {
 			try {
-				logger.info("### SemanticVersionBuildWrapper::getAppVersion -> attempting to parse using "
-						+ parser.getClass().getSimpleName());
-				return parser.extractAppVersion(build);
+				logger.info("### SemanticVersionBuildWrapper::getAppVersion -> attempting to parse using " + parser.getClass().getSimpleName());
+                appVersion = parser.extractAppVersion(build);
 
 			} catch (IOException e) {
-				logger.error("EXCEPTION: " + e);
+				logger.severe("EXCEPTION: " + e);
 			} catch (InvalidBuildFileFormatException e) {
-				logger.error("EXCEPTION: " + e);
+				logger.severe("EXCEPTION: " + e);
 			}
 		}
 
-		return appVersion;
+        logger.info("### SemanticVersionBuildWrapper::getAppVersion -> " + appVersion.toJsonString());
+
+        return appVersion;
 	}
 
 	private String getJenkinsBuildNumber(AbstractBuild build) {
@@ -151,9 +151,9 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
 		try {
 			environmentVariables = build.getEnvironment(TaskListener.NULL);
 		} catch (IOException e) {
-			logger.error("EXCEPTION: " + e);
+			logger.severe("EXCEPTION: " + e);
 		} catch (InterruptedException e) {
-			logger.error("EXCEPTION: " + e);
+			logger.severe("EXCEPTION: " + e);
 		}
 		return environmentVariables != null ? environmentVariables.get(
 				"BUILD_NUMBER", MISSING_BUILD_NUMBER) : MISSING_BUILD_NUMBER;
