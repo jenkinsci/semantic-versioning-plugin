@@ -24,9 +24,8 @@
 
 package org.jenkinsci.plugins.SemanticVersioning;
 
-import java.util.logging.Logger;
-
 public class AppVersion {
+    public static final String MISSING_BUILD_NUMBER = "-1";
     private static final String SNAPSHOT = "SNAPSHOT";
     private final int major;
     private final int minor;

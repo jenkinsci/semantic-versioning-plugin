@@ -55,7 +55,7 @@ public class SemanticVersionColumn extends ListViewColumn {
                 logger.warning("Last Successful Build not found");
                 semanticVersion = UNKNOWN_VERSION;
             } else {
-                File file = new File(run.getArtifactsDir() + SEMANTIC_VERSION_FILENAME);
+                File file = new File(run.getRootDir() + SEMANTIC_VERSION_FILENAME);
                 if(file.exists()) {
                     try {
                         semanticVersion = FileUtils.readFileToString(file);

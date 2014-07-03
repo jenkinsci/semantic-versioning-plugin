@@ -24,30 +24,27 @@
 
 package org.jenkinsci.plugins.SemanticVersioning;
 
-import hudson.EnvVars;
 import hudson.Extension;
 import hudson.Launcher;
-import hudson.model.*;
+import hudson.model.AbstractBuild;
+import hudson.model.AbstractProject;
+import hudson.model.BuildListener;
 import hudson.tasks.BuildWrapper;
 import hudson.tasks.BuildWrapperDescriptor;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
-import org.apache.commons.io.FileUtils;
 import org.jenkinsci.plugins.SemanticVersioning.parsing.BuildDefinitionParser;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Map;
 import java.util.logging.Logger;
 
 public class SemanticVersionBuildWrapper extends BuildWrapper {
     private static final String DEFAULT_ENVIRONMENT_VARIABLE_NAME = "SEMANTIC_APP_VERSION";
-	private static final String MISSING_BUILD_NUMBER = "-1";
     public static final String SEMANTIC_VERSION_PLUGIN_DISPLAY_NAME = "Determine Semantic Version for project";
     private String environmentVariableName = DEFAULT_ENVIRONMENT_VARIABLE_NAME;
 	private static Logger logger = Logger.getLogger(String  .valueOf(AppVersion.class));
@@ -97,66 +94,18 @@ public class SemanticVersionBuildWrapper extends BuildWrapper {
 
 	@Override
 	public Environment setUp(AbstractBuild build, Launcher launcher, BuildListener listener) {
-		AppVersion appVersion = getAppVersion(build);
-        if(useJenkinsBuildNumber) {
-            String buildNumber = getJenkinsBuildNumber(build);
-            appVersion.setBuild(Integer.parseInt(buildNumber));
-            logger.info("### SemanticVersionBuildWrapper::getAppVersion -> using Jenkins Build Number: " + appVersion.toJsonString());
-        }
-
-		final String reportedVersion = appVersion.toString();
-		writeVersionToFile(build, reportedVersion);
-
-		return new Environment() {
-			@Override
-			public void buildEnvVars(Map<String, String> env) {
-				env.put(getEnvironmentVariableName(), reportedVersion);
-			}
-		};
-	}
-
-	private void writeVersionToFile(AbstractBuild build, String reportedVersion) {
-		String filename = getSemanticVersionFilename();
-		if (filename != null && filename.length() > 0) {
-			File file = new File(build.getArtifactsDir() + "/" + filename);
-			try {
-				FileUtils.writeStringToFile(file, reportedVersion + "\n");
-			} catch (IOException e) {
-				logger.severe("Exception writing version to file: " + e);
-			}
-		}
-	}
-
-	private AppVersion getAppVersion(AbstractBuild build) {
-		AppVersion appVersion = AppVersion.EmptyVersion;
-		if (this.parser != null) {
-			try {
-				logger.info("### SemanticVersionBuildWrapper::getAppVersion -> attempting to parse using " + parser.getClass().getSimpleName());
-                appVersion = parser.extractAppVersion(build);
-
-			} catch (IOException e) {
-				logger.severe("EXCEPTION: " + e);
-			} catch (InvalidBuildFileFormatException e) {
-				logger.severe("EXCEPTION: " + e);
-			}
-		}
-
-        logger.info("### SemanticVersionBuildWrapper::getAppVersion -> " + appVersion.toJsonString());
-
-        return appVersion;
-	}
-
-	private String getJenkinsBuildNumber(AbstractBuild build) {
-		EnvVars environmentVariables = null;
-		try {
-			environmentVariables = build.getEnvironment(TaskListener.NULL);
-		} catch (IOException e) {
-			logger.severe("EXCEPTION: " + e);
-		} catch (InterruptedException e) {
-			logger.severe("EXCEPTION: " + e);
-		}
-		return environmentVariables != null ? environmentVariables.get(
-				"BUILD_NUMBER", MISSING_BUILD_NUMBER) : MISSING_BUILD_NUMBER;
+        SemanticVersioningApp semanticVersioningApp = new SemanticVersioningApp(
+                build,
+                this.parser,
+                this.useJenkinsBuildNumber,
+                this.getSemanticVersionFilename());
+        final AppVersion appVersion = semanticVersioningApp.determineSemanticVersion();
+        return new Environment() {
+            @Override
+            public void buildEnvVars(Map<String, String> env) {
+                env.put(getEnvironmentVariableName(), appVersion.toString());
+            }
+        };
 	}
 
 	@Extension
