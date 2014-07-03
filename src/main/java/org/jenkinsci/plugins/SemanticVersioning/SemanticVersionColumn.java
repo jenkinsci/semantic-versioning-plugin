@@ -35,14 +35,13 @@ import org.kohsuke.stapler.StaplerRequest;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Logger;
 
 public class SemanticVersionColumn extends ListViewColumn {
 
     public static final String UNKNOWN_VERSION = "Unknown";
     public static final String SEMANTIC_VERSION_COLUMN_DISPLAY_NAME = "Semantic Version";
     public static final String SEMANTIC_VERSION_FILENAME = "/.semanticVersion";
-    private static Logger logger = Logger.getLogger(String.valueOf(AppVersion.class));
+//    private static Logger logger = Logger.getLogger(String.valueOf(AppVersion.class));
 
     @Extension
     public static final Descriptor<ListViewColumn> descriptor = new DescriptorImpl();
@@ -52,7 +51,7 @@ public class SemanticVersionColumn extends ListViewColumn {
         if(semanticVersion == null || semanticVersion.length() == 0) {
             Run run = job.getLastSuccessfulBuild();
             if(run == null) {
-                logger.warning("Last Successful Build not found");
+//                logger.warning("Last Successful Build not found");
                 semanticVersion = UNKNOWN_VERSION;
             } else {
                 File file = new File(run.getRootDir() + SEMANTIC_VERSION_FILENAME);
@@ -60,7 +59,8 @@ public class SemanticVersionColumn extends ListViewColumn {
                     try {
                         semanticVersion = FileUtils.readFileToString(file);
                     } catch (IOException e) {
-                        logger.severe(e.toString());
+//                        logger.severe(e.toString());
+                        System.out.println(e);
                     }
                 } else {
                     semanticVersion = UNKNOWN_VERSION;

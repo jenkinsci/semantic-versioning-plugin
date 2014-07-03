@@ -10,7 +10,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 
 public class SemanticVersionNotifier extends Notifier {
-    public BuildStepMonitor getRequiredMonitorService() { return BuildStepMonitor.BUILD; }
+    public BuildStepMonitor getRequiredMonitorService() { return BuildStepMonitor.STEP; }
 
     @DataBoundConstructor
     public SemanticVersionNotifier() {
@@ -21,13 +21,12 @@ public class SemanticVersionNotifier extends Notifier {
 
     @Override
     public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) {
-
 //        System.out.println("build = [" + build + "], launcher = [" + launcher + "], listener = [" + listener + "]");
         System.out.println("$$$[[[[[[[[[[   SemanticVersionNotifier::perform  ]]]]]]]]]]]]$$$");
         return true;
     }
 
-    @Extension(ordinal=-9999)
+    @Extension(ordinal=9999)
     public static final class DescriptorImpl extends BuildStepDescriptor<Publisher> {
 
         public DescriptorImpl() {
@@ -36,7 +35,7 @@ public class SemanticVersionNotifier extends Notifier {
 
         @Override
         public String getDisplayName() {
-            return "Determine Semantic Version";
+            return "Determine Semantic Version (Notifier)";
         }
 
         @Override

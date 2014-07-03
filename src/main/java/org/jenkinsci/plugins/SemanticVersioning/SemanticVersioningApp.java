@@ -49,6 +49,7 @@ public class SemanticVersioningApp {
                 FileUtils.writeStringToFile(file, reportedVersion + "\n");
             } catch (IOException e) {
                 logger.severe("Exception writing version to file: " + e);
+                System.out.println(e);
             }
         }
     }
@@ -62,8 +63,10 @@ public class SemanticVersioningApp {
 
             } catch (IOException e) {
                 logger.severe("EXCEPTION: " + e);
+                System.out.println(e);
             } catch (InvalidBuildFileFormatException e) {
                 logger.severe("EXCEPTION: " + e);
+                System.out.println(e);
             }
         }
 
@@ -78,8 +81,10 @@ public class SemanticVersioningApp {
             environmentVariables = this.build.getEnvironment(TaskListener.NULL);
         } catch (IOException e) {
             logger.severe("EXCEPTION: " + e);
+            System.out.println(e);
         } catch (InterruptedException e) {
             logger.severe("EXCEPTION: " + e);
+            System.out.println(e);
         }
         return environmentVariables != null ? environmentVariables.get(
                 "BUILD_NUMBER", AppVersion.MISSING_BUILD_NUMBER) : AppVersion.MISSING_BUILD_NUMBER;

@@ -41,13 +41,12 @@ import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
 import java.util.Map;
-import java.util.logging.Logger;
 
 public class SemanticVersionBuildWrapper extends BuildWrapper {
     private static final String DEFAULT_ENVIRONMENT_VARIABLE_NAME = "SEMANTIC_APP_VERSION";
     public static final String SEMANTIC_VERSION_PLUGIN_DISPLAY_NAME = "Determine Semantic Version for project";
     private String environmentVariableName = DEFAULT_ENVIRONMENT_VARIABLE_NAME;
-	private static Logger logger = Logger.getLogger(String  .valueOf(AppVersion.class));
+//	private static Logger logger = Logger.getLogger(String  .valueOf(AppVersion.class));
 	private BuildDefinitionParser parser;
     private boolean useJenkinsBuildNumber = true;
 
