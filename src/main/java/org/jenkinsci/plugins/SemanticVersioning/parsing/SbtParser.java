@@ -31,6 +31,7 @@ import org.apache.commons.io.FileUtils;
 import org.jenkinsci.plugins.SemanticVersioning.AbstractSematicParserDescription;
 import org.jenkinsci.plugins.SemanticVersioning.AppVersion;
 import org.jenkinsci.plugins.SemanticVersioning.InvalidBuildFileFormatException;
+import org.jenkinsci.plugins.SemanticVersioning.Messages;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -79,7 +80,7 @@ public class SbtParser extends AbstractBuildDefinitionParser {
 			@Override
 			public String getDisplayName() {
 				
-				return "SBT Scala build parser";
+				return Messages.Parsers.SBT_BUILD_SBT_PARSER;
 			}
 		};
 	}

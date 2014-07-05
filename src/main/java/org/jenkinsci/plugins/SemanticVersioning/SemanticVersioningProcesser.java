@@ -10,7 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-public class SemanticVersioningApp {
+public class SemanticVersioningProcesser {
 
     private static Logger logger = Logger.getLogger(String.valueOf(AppVersion.class));
     private AbstractBuild build;
@@ -18,7 +18,7 @@ public class SemanticVersioningApp {
     private boolean useJenkinsBuildNumber;
     private String semanticVersionFilename;
 
-    public SemanticVersioningApp(
+    public SemanticVersioningProcesser(
             AbstractBuild build,
             BuildDefinitionParser parser,
             boolean useJenkinsBuildNumber,
@@ -44,7 +44,9 @@ public class SemanticVersioningApp {
     }
     private void writeVersionToFile(String reportedVersion) {
         if (this.semanticVersionFilename != null && this.semanticVersionFilename.length() > 0) {
-            File file = new File(this.build.getRootDir() + "/" + this.semanticVersionFilename);
+            String filename = this.build.getRootDir() + "/" + this.semanticVersionFilename;
+            logger.info("#### SemanticVersionBuildWrapper::getAppVersion semantic version filename -> " + filename);
+            File file = new File(filename);
             try {
                 FileUtils.writeStringToFile(file, reportedVersion + "\n");
             } catch (IOException e) {

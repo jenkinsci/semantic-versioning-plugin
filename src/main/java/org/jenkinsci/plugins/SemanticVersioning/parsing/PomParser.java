@@ -35,6 +35,7 @@ import hudson.remoting.VirtualChannel;
 import org.jenkinsci.plugins.SemanticVersioning.AbstractSematicParserDescription;
 import org.jenkinsci.plugins.SemanticVersioning.AppVersion;
 import org.jenkinsci.plugins.SemanticVersioning.InvalidBuildFileFormatException;
+import org.jenkinsci.plugins.SemanticVersioning.Messages;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -48,9 +49,9 @@ import java.io.IOException;
 @Extension
 public class PomParser extends AbstractBuildDefinitionParser {
 
-	private static final String BUILD_FILE = "pom.xml";
+    private static final String BUILD_FILE = "pom.xml";
 
-	public PomParser() {
+    public PomParser() {
 	}
 
 	@Deprecated
@@ -136,7 +137,7 @@ public class PomParser extends AbstractBuildDefinitionParser {
 			@Override
 			public String getDisplayName() {
 
-				return "Maven Pom Parser";
+				return Messages.Parsers.MAVEN_POM_PARSER;
 			}
 		};
 	}

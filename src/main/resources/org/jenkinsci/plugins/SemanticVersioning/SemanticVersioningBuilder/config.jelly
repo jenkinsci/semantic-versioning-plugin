@@ -36,9 +36,4 @@
             checked="${descriptor.getUseJenkinsBuildNumber()}">
         <f:checkbox title="Use Jenkins Build Number" default="${descriptor.getDefaultUseJenkinsBuildNumber()}"/>
     </f:entry>
-    <f:entry
-            title="Environment Variable Name"
-            field="environmentVariableName">
-        <f:textbox default="${descriptor.getDefaultEnvironmentVariableName()}" />
-    </f:entry>
 </j:jelly>

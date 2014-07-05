@@ -32,6 +32,7 @@ import org.jenkinsci.plugins.SemanticVersioning.InvalidBuildFileFormatException;
 import hudson.Extension;
 import hudson.model.AbstractBuild;
 import hudson.model.Descriptor;
+import org.jenkinsci.plugins.SemanticVersioning.Messages;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -82,7 +83,7 @@ public class BuildScalaParser extends AbstractBuildDefinitionParser {
 			@Override
 			public String getDisplayName() {
 				
-				return "Build Scala Parser";
+				return Messages.Parsers.SBT_BUILD_SCALA_PARSER;
 			}
 		};
 	}

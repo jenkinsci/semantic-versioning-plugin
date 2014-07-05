@@ -35,35 +35,36 @@ import org.kohsuke.stapler.StaplerRequest;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Logger;
 
 public class SemanticVersionColumn extends ListViewColumn {
 
-    public static final String UNKNOWN_VERSION = "Unknown";
-    public static final String SEMANTIC_VERSION_COLUMN_DISPLAY_NAME = "Semantic Version";
-    public static final String SEMANTIC_VERSION_FILENAME = "/.semanticVersion";
-//    private static Logger logger = Logger.getLogger(String.valueOf(AppVersion.class));
+    private static Logger logger = Logger.getLogger(String.valueOf(AppVersion.class));
 
     @Extension
     public static final Descriptor<ListViewColumn> descriptor = new DescriptorImpl();
 
     public String getSemanticVersion(String semver, Job job) throws IOException, InterruptedException {
         String semanticVersion = semver;
-        if(semanticVersion == null || semanticVersion.length() == 0) {
+        if (semanticVersion == null || semanticVersion.length() == 0) {
             Run run = job.getLastSuccessfulBuild();
-            if(run == null) {
-//                logger.warning("Last Successful Build not found");
-                semanticVersion = UNKNOWN_VERSION;
+            if (run == null) {
+                logger.info("SemanticVersionColumn::getSemanticVersion -> last successful build not found.");
+                semanticVersion = Messages.UNKNOWN_VERSION;
             } else {
-                File file = new File(run.getRootDir() + SEMANTIC_VERSION_FILENAME);
-                if(file.exists()) {
+                String filename = run.getRootDir() + "/" + Messages.SEMANTIC_VERSION_FILENAME;
+                logger.info("SemanticVersionColumn::getSemanticVersion -> last successful build found. Filename -> " + filename);
+                File file = new File(filename);
+                if (file.exists()) {
                     try {
                         semanticVersion = FileUtils.readFileToString(file);
+                        logger.info("SemanticVersionColumn::getSemanticVersion -> read semantic version from file -> " + semanticVersion);
                     } catch (IOException e) {
-//                        logger.severe(e.toString());
-                        System.out.println(e);
+                        logger.severe(e.toString());
                     }
                 } else {
-                    semanticVersion = UNKNOWN_VERSION;
+                    logger.info("SemanticVersionColumn::getSemanticVersion -> semanticVersion file not found.");
+                    semanticVersion = Messages.UNKNOWN_VERSION;
                 }
             }
         }
@@ -79,7 +80,7 @@ public class SemanticVersionColumn extends ListViewColumn {
 
         @Override
         public String getDisplayName() {
-            return SEMANTIC_VERSION_COLUMN_DISPLAY_NAME;
+            return Messages.SEMANTIC_VERSION_COLUMN_DISPLAY_NAME;
         }
     }
 }

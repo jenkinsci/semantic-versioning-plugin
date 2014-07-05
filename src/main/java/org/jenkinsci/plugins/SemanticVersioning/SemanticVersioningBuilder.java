@@ -7,9 +7,10 @@ import hudson.model.BuildListener;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Builder;
+import hudson.util.ListBoxModel;
+import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.jenkinsci.plugins.SemanticVersioning.parsing.BuildDefinitionParser;
-import org.jenkinsci.plugins.SemanticVersioning.parsing.PomParser;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 
@@ -22,47 +23,82 @@ public class SemanticVersioningBuilder extends Builder {
 
     @DataBoundConstructor
     public SemanticVersioningBuilder(String parser, boolean useJenkinsBuildNumber) {
-//        try {
-            this.parser = new PomParser();
-//            this.parser = (BuildDefinitionParser) Jenkins.getInstance().getExtensionList(parser).iterator().next();
-//        } catch (ClassNotFoundException e) {
-//            e.printStackTrace();
-//        }
         this.useJenkinsBuildNumber = useJenkinsBuildNumber;
+        try {
+            this.parser = (BuildDefinitionParser) Jenkins.getInstance().getExtensionList(parser).iterator().next();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        System.out.println("##### SemanticVersioningBuilder::ctor parser = [" + parser + "], useJenkinsBuildNumber = [" + useJenkinsBuildNumber + "]");
     }
 
-//    @Extension
-//    public static final DescriptorImpl DESCRIPTOR = new DescriptorImpl();
+    public BuildStepMonitor getRequiredMonitorService() {
+        return BuildStepMonitor.NONE;
+    }
 
-    public BuildStepMonitor getRequiredMonitorService() { return BuildStepMonitor.NONE; }
+    public boolean getUseJenkinsBuildNumber() {
+        return this.useJenkinsBuildNumber;
+    }
+
+    /**
+     * Used from <tt>config.jelly</tt>.
+     *
+     * @return the canonical class name of the parser  which the semantic version use
+     * to parse version number
+     */
+    public String getParser() {
+        return this.parser.getClass().getCanonicalName();
+    }
 
     @Override
-    public boolean perform(AbstractBuild<?,?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
-        System.out.println(">>>>>>>>>>>>>>>>> SemanticVersioningBuilder::perform");
-        SemanticVersioningApp semanticVersioningApp = new SemanticVersioningApp(
+    public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
+        System.out.println("##### SemanticVersioningBuilder::perform");
+        SemanticVersioningProcesser semanticVersioningApp = new SemanticVersioningProcesser(
                 build,
                 this.parser,
                 this.useJenkinsBuildNumber,
-                ".semver");
+                Messages.SEMANTIC_VERSION_FILENAME);
         semanticVersioningApp.determineSemanticVersion();
         return true;
     }
-//
-//    @Override
-//    public DescriptorImpl getDescriptor() {
-//        return DESCRIPTOR;
-//    }
 
-    @Extension(ordinal=9999)
+    @Extension
+    public static final DescriptorImpl descriptor = new DescriptorImpl();
+
+    @Extension(ordinal = 9999)
     public static final class DescriptorImpl extends BuildStepDescriptor<Builder> {
+        /**
+         * In order to load the persisted global configuration, you have to call
+         * load() in the constructor.
+         */
         public DescriptorImpl() {
             super(SemanticVersioningBuilder.class);
             load();
         }
 
+        /**
+         * Generates ListBoxModel for available BuildDefinitionParsers
+         *
+         * @return available BuildDefinitionParsers as ListBoxModel
+         */
+        public ListBoxModel doFillParserItems() {
+            ListBoxModel parsersModel = new ListBoxModel();
+            for (BuildDefinitionParser parser : Jenkins.getInstance()
+                    .getExtensionList(BuildDefinitionParser.class)) {
+                parsersModel.add(parser.getDescriptor().getDisplayName(), parser
+                        .getClass().getCanonicalName());
+            }
+
+            return parsersModel;
+        }
+
+        public boolean getDefaultUseJenkinsBuildNumber() {
+            return true;
+        }
+
         @Override
         public String getDisplayName() {
-            return "Determine Semantic Version (Builder)";
+            return Messages.DISPLAY_NAME;
         }
 
         @Override
