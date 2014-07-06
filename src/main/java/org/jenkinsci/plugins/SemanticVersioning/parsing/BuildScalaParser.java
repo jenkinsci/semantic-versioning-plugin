@@ -25,7 +25,7 @@
 package org.jenkinsci.plugins.SemanticVersioning.parsing;
 
 import org.apache.commons.io.FileUtils;
-import org.jenkinsci.plugins.SemanticVersioning.AbstractSematicParserDescription;
+import org.jenkinsci.plugins.SemanticVersioning.AbstractSemanticParserDescription;
 import org.jenkinsci.plugins.SemanticVersioning.AppVersion;
 import org.jenkinsci.plugins.SemanticVersioning.InvalidBuildFileFormatException;
 
@@ -78,7 +78,7 @@ public class BuildScalaParser extends AbstractBuildDefinitionParser {
 	
 	@SuppressWarnings("unchecked")
 	public Descriptor<BuildDefinitionParser> getDescriptor() {
-		return new AbstractSematicParserDescription() {
+		return new AbstractSemanticParserDescription() {
 			
 			@Override
 			public String getDisplayName() {

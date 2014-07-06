@@ -32,7 +32,7 @@ import hudson.maven.MavenModuleSet;
 import hudson.model.AbstractBuild;
 import hudson.model.Descriptor;
 import hudson.remoting.VirtualChannel;
-import org.jenkinsci.plugins.SemanticVersioning.AbstractSematicParserDescription;
+import org.jenkinsci.plugins.SemanticVersioning.AbstractSemanticParserDescription;
 import org.jenkinsci.plugins.SemanticVersioning.AppVersion;
 import org.jenkinsci.plugins.SemanticVersioning.InvalidBuildFileFormatException;
 import org.jenkinsci.plugins.SemanticVersioning.Messages;
@@ -132,7 +132,7 @@ public class PomParser extends AbstractBuildDefinitionParser {
 
 	@SuppressWarnings("unchecked")
 	public Descriptor<BuildDefinitionParser> getDescriptor() {
-		return new AbstractSematicParserDescription() {
+		return new AbstractSemanticParserDescription() {
 
 			@Override
 			public String getDisplayName() {
