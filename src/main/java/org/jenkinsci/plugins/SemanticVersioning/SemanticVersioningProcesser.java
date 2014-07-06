@@ -58,7 +58,7 @@ public class SemanticVersioningProcesser {
         if(this.useJenkinsBuildNumber) {
             String buildNumber = getJenkinsBuildNumber();
             appVersion.setBuild(Integer.parseInt(buildNumber));
-            logger.info("### SemanticVersionBuildWrapper::getAppVersion -> using Jenkins Build Number: " + appVersion.toJsonString());
+            logger.info("SemanticVersioningProcesser::getAppVersion -> using Jenkins Build Number: " + appVersion.toJsonString());
         }
 
         final String reportedVersion = appVersion.toString();
@@ -66,10 +66,11 @@ public class SemanticVersioningProcesser {
 
         return appVersion;
     }
+
     private void writeVersionToFile(String reportedVersion) {
         if (this.semanticVersionFilename != null && this.semanticVersionFilename.length() > 0) {
             String filename = this.build.getRootDir() + "/" + this.semanticVersionFilename;
-            logger.info("#### SemanticVersionBuildWrapper::getAppVersion semantic version filename -> " + filename);
+            logger.info("SemanticVersioningProcesser::writeVersionToFile semantic version filename -> " + filename);
             File file = new File(filename);
             try {
                 FileUtils.writeStringToFile(file, reportedVersion + "\n");
@@ -84,19 +85,17 @@ public class SemanticVersioningProcesser {
         AppVersion appVersion = AppVersion.EmptyVersion;
         if (this.parser != null) {
             try {
-                logger.info("### SemanticVersionBuildWrapper::getAppVersion -> attempting to parse using " + parser.getClass().getSimpleName());
+                logger.info("SemanticVersioningProcesser::getAppVersion -> attempting to parse using " + parser.getClass().getSimpleName());
                 appVersion = parser.extractAppVersion(this.build);
 
             } catch (IOException e) {
                 logger.severe("EXCEPTION: " + e);
-                System.out.println(e);
             } catch (InvalidBuildFileFormatException e) {
                 logger.severe("EXCEPTION: " + e);
-                System.out.println(e);
             }
         }
 
-        logger.info("### SemanticVersionBuildWrapper::getAppVersion -> " + appVersion.toJsonString());
+        logger.info("SemanticVersioningProcesser::getAppVersion -> " + appVersion.toJsonString());
 
         return appVersion;
     }
@@ -107,10 +106,8 @@ public class SemanticVersioningProcesser {
             environmentVariables = this.build.getEnvironment(TaskListener.NULL);
         } catch (IOException e) {
             logger.severe("EXCEPTION: " + e);
-            System.out.println(e);
         } catch (InterruptedException e) {
             logger.severe("EXCEPTION: " + e);
-            System.out.println(e);
         }
         return environmentVariables != null ? environmentVariables.get(
                 "BUILD_NUMBER", AppVersion.MISSING_BUILD_NUMBER) : AppVersion.MISSING_BUILD_NUMBER;

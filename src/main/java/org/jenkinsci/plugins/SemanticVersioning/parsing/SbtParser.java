@@ -28,7 +28,6 @@ import hudson.Extension;
 import hudson.model.AbstractBuild;
 import hudson.model.Descriptor;
 import org.apache.commons.io.FileUtils;
-import org.jenkinsci.plugins.SemanticVersioning.AbstractSemanticParserDescription;
 import org.jenkinsci.plugins.SemanticVersioning.AppVersion;
 import org.jenkinsci.plugins.SemanticVersioning.InvalidBuildFileFormatException;
 import org.jenkinsci.plugins.SemanticVersioning.Messages;

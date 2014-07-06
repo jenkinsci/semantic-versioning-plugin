@@ -25,57 +25,77 @@
 package org.jenkinsci.plugins.SemanticVersioning;
 
 import hudson.Extension;
+import hudson.ExtensionList;
 import hudson.model.Descriptor;
 import hudson.model.Job;
-import hudson.model.Run;
+import hudson.util.ListBoxModel;
 import hudson.views.ListViewColumn;
+import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
-import org.apache.commons.io.FileUtils;
+import org.jenkinsci.plugins.SemanticVersioning.columnDisplay.AbstractColumnDisplayStrategy;
+import org.jenkinsci.plugins.SemanticVersioning.columnDisplay.ColumnDisplayStrategy;
+import org.jenkinsci.plugins.SemanticVersioning.columnDisplay.LastSuccessfulBuildStrategy;
+import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
 
 public class SemanticVersionColumn extends ListViewColumn {
 
     private static Logger logger = Logger.getLogger(String.valueOf(AppVersion.class));
+    private ColumnDisplayStrategy displayStrategy;
 
-    @Extension
-    public static final Descriptor<ListViewColumn> descriptor = new DescriptorImpl();
-
-    public String getSemanticVersion(String semver, Job job) throws IOException, InterruptedException {
-        String semanticVersion = semver;
-        if (semanticVersion == null || semanticVersion.length() == 0) {
-            Run run = job.getLastSuccessfulBuild();
-            if (run == null) {
-                logger.info("SemanticVersionColumn::getSemanticVersion -> last successful build not found.");
-                semanticVersion = Messages.UNKNOWN_VERSION;
-            } else {
-                String filename = run.getRootDir() + "/" + Messages.SEMANTIC_VERSION_FILENAME;
-                logger.info("SemanticVersionColumn::getSemanticVersion -> last successful build found. Filename -> " + filename);
-                File file = new File(filename);
-                if (file.exists()) {
-                    try {
-                        semanticVersion = FileUtils.readFileToString(file);
-                        logger.info("SemanticVersionColumn::getSemanticVersion -> read semantic version from file -> " + semanticVersion);
-                    } catch (IOException e) {
-                        logger.severe(e.toString());
-                    }
-                } else {
-                    logger.info("SemanticVersionColumn::getSemanticVersion -> semanticVersion file not found.");
-                    semanticVersion = Messages.UNKNOWN_VERSION;
-                }
-            }
+    @DataBoundConstructor
+    public SemanticVersionColumn(String displayStrategyName) {
+        try {
+            this.displayStrategy = (ColumnDisplayStrategy) Jenkins.getInstance().getExtensionList(displayStrategyName).iterator().next();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
         }
-
-        return semanticVersion;
     }
 
-    private static class DescriptorImpl extends Descriptor<ListViewColumn> {
+    @Extension
+    public static final Descriptor<ListViewColumn> descriptor = new SemanticVersionColumnDescriptor();
+
+    public String getDisplayStrategy() {
+        return this.displayStrategy.getClass().getCanonicalName();
+    }
+
+    public String getSemanticVersion(Job job) throws IOException, InterruptedException {
+        ColumnDisplayStrategy strategy;
+        if(job.getLastBuild().getResult().ordinal == 0) {
+            strategy = new LastSuccessfulBuildStrategy();
+        } else {
+            strategy = this.displayStrategy;
+        }
+        return strategy.getDisplayString(job);
+    }
+
+    @Extension(ordinal = 1.9)
+    public static class SemanticVersionColumnDescriptor extends Descriptor<ListViewColumn> {
+        public SemanticVersionColumnDescriptor() {
+            super(SemanticVersionColumn.class);
+            load();
+        }
+
         @Override
         public ListViewColumn newInstance(StaplerRequest req, JSONObject formData) throws FormException {
-            return new SemanticVersionColumn();
+            String strategy = formData == null ? LastSuccessfulBuildStrategy.class.getCanonicalName() : formData.getString("displayStrategy");
+            return new SemanticVersionColumn(strategy);
+        }
+
+        public ListBoxModel doFillDisplayStrategyItems() {
+            ListBoxModel columnDisplayStrategies = new ListBoxModel();
+            ExtensionList<ColumnDisplayStrategy> extensionList = AbstractColumnDisplayStrategy.getStrategies();
+            logger.info("SemanticVersionColumnDescriptor::doFillDisplayStrategyItems There are " + extensionList.size() + " strategies available.");
+            for (ColumnDisplayStrategy strategy : extensionList) {
+                columnDisplayStrategies.add(
+                        strategy.getDescriptor().getDisplayName(),
+                        strategy.getClass().getCanonicalName());
+            }
+
+            return columnDisplayStrategies;
         }
 
         @Override

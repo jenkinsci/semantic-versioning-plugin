@@ -22,11 +22,9 @@
  * THE SOFTWARE.
  */
 
-package org.jenkinsci.plugins.SemanticVersioning;
+package org.jenkinsci.plugins.SemanticVersioning.parsing;
 
 public abstract class AbstractSemanticParserDescription extends hudson.model.Descriptor {
-
 	@Override
 	public abstract String getDisplayName();
-
 }

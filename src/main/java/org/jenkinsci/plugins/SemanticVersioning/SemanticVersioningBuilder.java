@@ -53,8 +53,10 @@ public class SemanticVersioningBuilder extends Builder {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-        System.out.println("##### SemanticVersioningBuilder::ctor parser = [" + parser + "], useJenkinsBuildNumber = [" + useJenkinsBuildNumber + "]");
     }
+
+    @Extension
+    public static final SemanticVersioningBuilderDescriptor descriptor = new SemanticVersioningBuilderDescriptor();
 
     public BuildStepMonitor getRequiredMonitorService() {
         return BuildStepMonitor.NONE;
@@ -76,7 +78,6 @@ public class SemanticVersioningBuilder extends Builder {
 
     @Override
     public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
-        System.out.println("##### SemanticVersioningBuilder::perform");
         SemanticVersioningProcesser semanticVersioningApp = new SemanticVersioningProcesser(
                 build,
                 this.parser,
@@ -86,16 +87,13 @@ public class SemanticVersioningBuilder extends Builder {
         return true;
     }
 
-    @Extension
-    public static final DescriptorImpl descriptor = new DescriptorImpl();
-
     @Extension(ordinal = 9999)
-    public static final class DescriptorImpl extends BuildStepDescriptor<Builder> {
+    public static final class SemanticVersioningBuilderDescriptor extends BuildStepDescriptor<Builder> {
         /**
          * In order to load the persisted global configuration, you have to call
          * load() in the constructor.
          */
-        public DescriptorImpl() {
+        public SemanticVersioningBuilderDescriptor() {
             super(SemanticVersioningBuilder.class);
             load();
         }

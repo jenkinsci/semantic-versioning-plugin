@@ -22,24 +22,26 @@
  * THE SOFTWARE.
  */
 
-package org.jenkinsci.plugins.SemanticVersioning;
+package org.jenkinsci.plugins.SemanticVersioning.columnDisplay;
 
-public class Messages {
-    public static final String SEMANTIC_VERSION_FILENAME = ".semanticVersion";
-    public static final String DISPLAY_NAME = "Determine Semantic Version";
-    public static final String SEMANTIC_VERSION_COLUMN_DISPLAY_NAME = "Semantic Version";
-    public static final String UNKNOWN_VERSION = "Unknown";
+import hudson.Extension;
+import hudson.model.Descriptor;
+import hudson.model.Job;
+import org.jenkinsci.plugins.SemanticVersioning.Messages;
 
-    public class Parsers {
-        public static final String SBT_BUILD_SBT_PARSER = "SBT build.sbt parser";
-        public static final String MAVEN_POM_PARSER = "Maven Pom Parser";
-        public static final String SBT_BUILD_SCALA_PARSER = "SBT Build.scala Parser";
+@Extension
+public class NotApplicableStrategy extends AbstractColumnDisplayStrategy {
+    public String getDisplayString(Job job) {
+        return "N/A";
     }
 
-    public class ColumnDisplayStrategies {
-        public static final String LAST_JENKINS_BUILD_NUMBER_STRATEGY = "Show Last Jenkins Build Number";
-        public static final String LAST_SUCCESSFUL_JENKINS_BUILD_NUMBER_STRATEGY = "Show Last Successful Jenkins Build Number";
-        public static final String LAST_SUCCESSFUL_BUILD_VERSION_STRATEGY = "Show Last Successful Semantic Version";
-        public static final String NA_STRATEGY = "Show 'N/A'";
+    @SuppressWarnings("unchecked")
+    public Descriptor<ColumnDisplayStrategy> getDescriptor() {
+        return new AbstractDisplayStrategyDescription() {
+            @Override
+            public String getDisplayName() {
+                return Messages.ColumnDisplayStrategies.NA_STRATEGY;
+            }
+        };
     }
 }

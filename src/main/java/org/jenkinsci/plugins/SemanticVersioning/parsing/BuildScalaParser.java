@@ -25,7 +25,6 @@
 package org.jenkinsci.plugins.SemanticVersioning.parsing;
 
 import org.apache.commons.io.FileUtils;
-import org.jenkinsci.plugins.SemanticVersioning.AbstractSemanticParserDescription;
 import org.jenkinsci.plugins.SemanticVersioning.AppVersion;
 import org.jenkinsci.plugins.SemanticVersioning.InvalidBuildFileFormatException;
 

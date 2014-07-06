@@ -21,9 +21,9 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
   THE SOFTWARE.
 -->
-
-<?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core">
-    <j:set var="job" value="${job}"/>
-    <td>${it.getSemanticVersion(job)}</td>
+<j:jelly xmlns:j="jelly:core"
+         xmlns:f="/lib/form">
+    <f:entry title="Display Strategy (for unsuccessful previous builds)" field="displayStrategy">
+        <f:select/>
+    </f:entry>
 </j:jelly>

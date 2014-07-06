@@ -35,7 +35,6 @@ import org.apache.tools.ant.ExtensionPoint;
  */
 
 public abstract class AbstractBuildDefinitionParser extends ExtensionPoint implements BuildDefinitionParser {
-
 	public static ExtensionList<BuildDefinitionParser> getParsers() {
 			return Jenkins.getInstance().getExtensionList(BuildDefinitionParser.class);
 	}
