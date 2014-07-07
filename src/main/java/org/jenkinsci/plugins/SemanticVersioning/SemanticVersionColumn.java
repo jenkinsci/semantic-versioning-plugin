@@ -55,7 +55,6 @@ public class SemanticVersionColumn extends ListViewColumn {
         }
     }
 
-    @Extension
     public static final Descriptor<ListViewColumn> descriptor = new SemanticVersionColumnDescriptor();
 
     public String getDisplayStrategy() {
@@ -72,7 +71,7 @@ public class SemanticVersionColumn extends ListViewColumn {
         return strategy.getDisplayString(job);
     }
 
-    @Extension(ordinal = 1.9)
+    @Extension(ordinal = 1.5)
     public static class SemanticVersionColumnDescriptor extends Descriptor<ListViewColumn> {
         public SemanticVersionColumnDescriptor() {
             super(SemanticVersionColumn.class);
