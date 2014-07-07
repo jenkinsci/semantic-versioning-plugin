@@ -7,7 +7,7 @@
 	</parent>
 
 	<artifactId>semantic-versioning-plugin</artifactId>
-	<version>1.7</version>
+	<version>1.8-SNAPSHOT</version>
 	<packaging>hpi</packaging>
 
 	<name>Semantic Versioning Plugin</name>
