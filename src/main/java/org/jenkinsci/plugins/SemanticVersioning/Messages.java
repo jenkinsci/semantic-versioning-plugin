@@ -34,6 +34,8 @@ public class Messages {
         public static final String SBT_BUILD_SBT_PARSER = "SBT build.sbt parser";
         public static final String MAVEN_POM_PARSER = "Maven Pom Parser";
         public static final String SBT_BUILD_SCALA_PARSER = "SBT Build.scala Parser";
+        public static final String BOWER_JSON_PARSER = "Bower bower.json Parser";
+        public static final String NPM_JSON_PARSER = "NPM package.json Parser";
     }
 
     public class ColumnDisplayStrategies {
