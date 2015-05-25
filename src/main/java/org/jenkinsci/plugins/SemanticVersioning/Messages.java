@@ -44,4 +44,9 @@ public class Messages {
         public static final String LAST_SUCCESSFUL_BUILD_VERSION_STRATEGY = "Show Last Successful Semantic Version";
         public static final String NA_STRATEGY = "Show 'N/A'";
     }
+
+    public class NamingStrategies {
+    	public static final String NOOP_NAMING = "none";
+    	public static final String MAVEN_RELEASE_DEVELOPMENT = "Maven, release and development version";
+    }
 }

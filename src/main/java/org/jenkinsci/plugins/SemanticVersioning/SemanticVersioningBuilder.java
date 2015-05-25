@@ -24,34 +24,50 @@
 
 package org.jenkinsci.plugins.SemanticVersioning;
 
+import hudson.EnvVars;
 import hudson.Extension;
 import hudson.Launcher;
-import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
+import hudson.model.EnvironmentContributingAction;
+import hudson.model.TaskListener;
+import hudson.model.AbstractBuild;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Builder;
 import hudson.util.ListBoxModel;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
+
+import org.jenkinsci.plugins.SemanticVersioning.naming.NamingStrategy;
 import org.jenkinsci.plugins.SemanticVersioning.parsing.BuildDefinitionParser;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 
-import java.io.IOException;
-
 public class SemanticVersioningBuilder extends Builder {
 
     private BuildDefinitionParser parser;
+    private NamingStrategy namingStrategy;
+    private String envVariable = "BUILD_VERSION";
     private boolean useJenkinsBuildNumber;
 
     @DataBoundConstructor
-    public SemanticVersioningBuilder(String parser, boolean useJenkinsBuildNumber) {
+    public SemanticVersioningBuilder(String parser, String namingStrategy, boolean useJenkinsBuildNumber, String envVariable) {
         this.useJenkinsBuildNumber = useJenkinsBuildNumber;
+        this.envVariable = envVariable;
         try {
             this.parser = (BuildDefinitionParser) Jenkins.getInstance().getExtensionList(parser).iterator().next();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
+        }
+        try {
+        	this.namingStrategy = (NamingStrategy) Jenkins.getInstance().getExtensionList(namingStrategy).iterator().next();
+        } catch (ClassNotFoundException e) {
+        	e.printStackTrace();
         }
     }
 
@@ -76,6 +92,10 @@ public class SemanticVersioningBuilder extends Builder {
         return this.parser.getClass().getCanonicalName();
     }
 
+    public String getNamingStrategy() {
+    	return this.namingStrategy.getClass().getCanonicalName();
+    }
+
     @Override
     public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
         SemanticVersioningProcesser semanticVersioningApp = new SemanticVersioningProcesser(
@@ -83,11 +103,33 @@ public class SemanticVersioningBuilder extends Builder {
                 this.parser,
                 this.useJenkinsBuildNumber,
                 Messages.SEMANTIC_VERSION_FILENAME);
-        semanticVersioningApp.determineSemanticVersion();
+        AppVersion appVersion = semanticVersioningApp.determineSemanticVersion();
+        int buildNumber = -1;
+        try {
+        	buildNumber = Integer.parseInt(build.getEnvironment(TaskListener.NULL).get("BUILD_NUMBER"));
+		} catch (Exception e) {
+		}
+        try {
+        	Map<String,String> vars = new HashMap<String,String>();
+        	namingStrategy.exportNames(appVersion,vars,useJenkinsBuildNumber,buildNumber);
+        	
+        	build.addAction(new InjectVersionVarsAction(vars));
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new IOException(e);
+		}
         return true;
     }
 
-    @Extension(ordinal = 9999)
+    public String getEnvVariable() {
+		return envVariable;
+	}
+
+	public void setEnvVariable(String envVariable) {
+		this.envVariable = envVariable;
+	}
+
+	@Extension(ordinal = 9999)
     public static final class SemanticVersioningBuilderDescriptor extends BuildStepDescriptor<Builder> {
         /**
          * In order to load the persisted global configuration, you have to call
@@ -110,10 +152,18 @@ public class SemanticVersioningBuilder extends Builder {
                 parsersModel.add(parser.getDescriptor().getDisplayName(), parser
                         .getClass().getCanonicalName());
             }
-
             return parsersModel;
         }
 
+        public ListBoxModel doFillNamingStrategyItems() {
+        	ListBoxModel namingStrategiesModel = new ListBoxModel();
+        	for (NamingStrategy namingStrategy : Jenkins.getInstance()
+        			.getExtensionList(NamingStrategy.class)) {
+        		namingStrategiesModel.add(namingStrategy.getDescriptor().getDisplayName(), namingStrategy.getClass().getCanonicalName());
+        	}
+        	return namingStrategiesModel;
+        }
+        
         public boolean getDefaultUseJenkinsBuildNumber() {
             return true;
         }
@@ -133,4 +183,49 @@ public class SemanticVersioningBuilder extends Builder {
             return super.newInstance(req, formData);
         }
     }
+	
+	
+	private class InjectVersionVarsAction implements EnvironmentContributingAction {
+		
+		private Map<String,String> versions;
+		
+		public InjectVersionVarsAction(Map<String, String> versions) {
+			super();
+			this.versions = versions;
+		}
+		
+
+		public String getIconFileName() {
+			return null;
+		}
+
+		public String getDisplayName() {
+			return Messages.DISPLAY_NAME;
+		}
+
+		public String getUrlName() {
+			return null;
+		}
+
+		public void buildEnvVars(AbstractBuild<?, ?> build, EnvVars env) {
+		    if (env == null) {
+	            return;
+	        }
+
+	        if (versions == null) {
+	            return;
+	        }
+
+	        for (Map.Entry<String, String> entry : versions.entrySet()) {
+	            String key = entry.getKey();
+	            String value = entry.getValue();
+	            if (key != null && value != null) {
+	            	env.put(key, value);
+	            }
+	        }
+	        
+		}
+		
+	}
+	
 }
