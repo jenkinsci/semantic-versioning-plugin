@@ -24,6 +24,7 @@
 
 package org.jenkinsci.plugins.SemanticVersioning.parsing;
 
+import hudson.FilePath;
 import hudson.model.AbstractBuild;
 
 import java.io.File;
@@ -47,8 +48,8 @@ public abstract class JsonVersionParser extends AbstractBuildDefinitionParser {
     }
 
     public AppVersion extractAppVersion(AbstractBuild<?, ?> build) throws IOException, InvalidBuildFileFormatException {
-        
-        File file = new File(filepath);
+    	        
+        File file = new File(build.getWorkspace().getRemote()+"/"+filepath);
         
         System.err.println(file.getAbsolutePath());
         
