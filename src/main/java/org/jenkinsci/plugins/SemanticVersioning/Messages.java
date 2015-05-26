@@ -48,5 +48,7 @@ public class Messages {
     public class NamingStrategies {
     	public static final String NOOP_NAMING = "none";
     	public static final String MAVEN_RELEASE_DEVELOPMENT = "Maven, release and development version";
+    	public static final String UNTOUCHED = "As found";
+    	public static final String UNTOUCHED_SNAPSHOT = "As found (-SNAPSHOT)";
     }
 }
