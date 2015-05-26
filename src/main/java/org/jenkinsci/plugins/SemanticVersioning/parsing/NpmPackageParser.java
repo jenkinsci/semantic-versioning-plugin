@@ -26,13 +26,17 @@ package org.jenkinsci.plugins.SemanticVersioning.parsing;
 
 import hudson.Extension;
 import hudson.model.Descriptor;
+
+import java.io.IOException;
+
+import org.jenkinsci.plugins.SemanticVersioning.InvalidBuildFileFormatException;
 import org.jenkinsci.plugins.SemanticVersioning.Messages;
 
 @Extension
 public class NpmPackageParser extends JsonVersionParser {
 
     public NpmPackageParser() {
-        super("package.json", "$.version");
+        super("package.json", "version");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -46,4 +50,10 @@ public class NpmPackageParser extends JsonVersionParser {
 			}
 		};
 	}
+	
+    public static void main(String[] args) throws IOException, InvalidBuildFileFormatException {
+    	NpmPackageParser npp = new NpmPackageParser();
+    	System.err.println(npp.extractAppVersion(null));
+	}
+	
 }

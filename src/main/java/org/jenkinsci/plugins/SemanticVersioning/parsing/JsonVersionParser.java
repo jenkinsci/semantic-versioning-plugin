@@ -24,11 +24,14 @@
 
 package org.jenkinsci.plugins.SemanticVersioning.parsing;
 
-import com.jayway.jsonpath.JsonPath;
 import hudson.model.AbstractBuild;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+
+import net.sf.json.JSONObject;
+
 import org.apache.commons.io.FileUtils;
 import org.jenkinsci.plugins.SemanticVersioning.AppVersion;
 import org.jenkinsci.plugins.SemanticVersioning.InvalidBuildFileFormatException;
@@ -46,24 +49,42 @@ public abstract class JsonVersionParser extends AbstractBuildDefinitionParser {
     public AppVersion extractAppVersion(AbstractBuild<?, ?> build) throws IOException, InvalidBuildFileFormatException {
         
         File file = new File(filepath);
+        
+        System.err.println(file.getAbsolutePath());
+        
         if(file.exists()) {
+
+        	System.err.println("file exists: "+file.getAbsolutePath());
 
             String content = FileUtils.readFileToString(file);
             
             if(content == null || content.isEmpty()) {
-                throw new InvalidBuildFileFormatException("'" + filepath + "' is not a valid file.");
+
+            	throw new InvalidBuildFileFormatException("'" + filepath + "' is not a valid file.");
+
             } else {
 
-                String version = JsonPath.read(content, jsonpathVersion);
-
-                if(version == null || version.isEmpty()) {
-                    throw new InvalidBuildFileFormatException("No version information found in " + filepath);
-                }
-                return AppVersion.parse(version);
+            	JSONObject jsonObject = JSONObject.fromObject( content );
+            	JSONObject out = jsonObject;
+            	String version = null;
+            	for(String s : jsonpathVersion.split("\\.")) {
+            		Object o = out.get(s);
+                    System.err.println(" ===> "+s+" / "+o);
+            		version = o.toString();
+            		if(o!=null && o instanceof JSONObject) {
+            			out = (JSONObject)o;
+            		} else {
+            			break;
+            		}
+            	}
+            	return AppVersion.parse(version);
             }
         } else {
             throw new FileNotFoundException("'" + filepath + "' was not found.");
         }
 	}
+    
+    
+    
 
 }

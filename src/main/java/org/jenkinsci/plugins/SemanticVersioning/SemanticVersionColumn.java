@@ -63,6 +63,9 @@ public class SemanticVersionColumn extends ListViewColumn {
 
     public String getSemanticVersion(Job job) throws IOException, InterruptedException {
         ColumnDisplayStrategy strategy;
+        if(job==null || job.getLastBuild()==null || job.getLastBuild().getResult()==null) {
+        	return "-";
+        }
         if(job.getLastBuild().getResult().ordinal == 0) {
             strategy = new LastSuccessfulBuildStrategy();
         } else {
