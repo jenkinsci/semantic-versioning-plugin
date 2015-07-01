@@ -6,15 +6,11 @@
 		<artifactId>plugin</artifactId>
 		<version>1.614</version>
 	</parent>
-
 	<artifactId>semantic-versioning-plugin</artifactId>
 	<version>1.8-SNAPSHOT</version>
 	<packaging>hpi</packaging>
-
 	<name>Semantic Versioning Plugin</name>
-
 	<url>http://wiki.jenkins-ci.org/display/JENKINS/semantic-versioning-plugin</url>
-
 	<build>
 		<plugins>
 			<plugin>
@@ -64,7 +60,6 @@
 		</plugins>
 
 	</build>
-
 	<dependencies>
 		<dependency>
 			<groupId>org.jenkins-ci.main</groupId>
@@ -72,7 +67,6 @@
 			<version>2.9</version>
 		</dependency>
 	</dependencies>
-
 	<developers>
 		<developer>
 			<id>ciroque</id>
@@ -80,14 +74,12 @@
 			<email>scalawagz@outlook.com</email>
 		</developer>
 	</developers>
-
 	<pluginRepositories>
 		<pluginRepository>
 			<id>repo.jenkins-ci.org</id>
 			<url>http://repo.jenkins-ci.org/public/</url>
 		</pluginRepository>
 	</pluginRepositories>
-
 	<reporting>
 		<plugins>
 			<plugin>
@@ -101,14 +93,12 @@
 			</plugin>
 		</plugins>
 	</reporting>
-
 	<repositories>
 		<repository>
 			<id>repo.jenkins-ci.org</id>
 			<url>http://repo.jenkins-ci.org/public/</url>
 		</repository>
 	</repositories>
-
 	<scm>
 		<connection>scm:git:ssh://github.com/jenkinsci/semantic-versioning-plugin.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/jenkinsci/semantic-versioning-plugin.git</developerConnection>
