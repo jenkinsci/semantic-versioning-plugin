@@ -30,6 +30,12 @@
      <f:entry title="Version Number Parser" field="parser">
         <f:select />
     </f:entry>
+     <f:entry title="Naming Strategies" field="namingStrategy">
+        <f:select />
+    </f:entry>
+     <f:entry title="Environment Variable" field="envVariable">
+        <f:textbox />
+    </f:entry>
     <f:entry
             title="Build Number Source"
             field="useJenkinsBuildNumber"

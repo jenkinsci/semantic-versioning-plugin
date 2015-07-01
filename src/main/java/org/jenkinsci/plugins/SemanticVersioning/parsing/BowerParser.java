@@ -32,7 +32,7 @@ import org.jenkinsci.plugins.SemanticVersioning.Messages;
 public class BowerParser extends JsonVersionParser {
 
     public BowerParser() {
-        super("bower.json", "$.version");
+        super("bower.json", "version");
 	}
 
 	@SuppressWarnings("unchecked")

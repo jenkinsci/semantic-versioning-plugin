@@ -32,9 +32,11 @@ import hudson.maven.MavenModuleSet;
 import hudson.model.AbstractBuild;
 import hudson.model.Descriptor;
 import hudson.remoting.VirtualChannel;
+
 import org.jenkinsci.plugins.SemanticVersioning.AppVersion;
 import org.jenkinsci.plugins.SemanticVersioning.InvalidBuildFileFormatException;
 import org.jenkinsci.plugins.SemanticVersioning.Messages;
+import org.jenkinsci.remoting.RoleChecker;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -42,6 +44,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.*;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -119,6 +122,9 @@ public class PomParser extends AbstractBuildDefinitionParser {
 								.getAbsolutePath()
 								+ " is not a valid POM file.");
 					}
+				}
+
+				public void checkRoles(RoleChecker arg0) throws SecurityException {
 				}
 
 			});
