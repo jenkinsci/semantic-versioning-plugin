@@ -34,7 +34,6 @@ import org.jenkinsci.plugins.SemanticVersioning.AppVersion;
 import org.jenkinsci.plugins.SemanticVersioning.InvalidBuildFileFormatException;
 
 import hudson.FilePath;
-import hudson.model.AbstractBuild;
 import net.sf.json.JSONObject;
 
 public abstract class JsonVersionParser extends AbstractBuildDefinitionParser {
@@ -53,21 +52,13 @@ public abstract class JsonVersionParser extends AbstractBuildDefinitionParser {
 
         logger.println("looking for json file: "+file.getAbsolutePath()+" ("+file.exists()+")");
         
-        logger.println("files in root");
-        File f = new File("/");
-        for(File fc : f.listFiles()) {
-        	logger.println(" - "+fc.getAbsolutePath());
-        }
-        
-        System.err.println(file.getAbsolutePath());
-        
         if(file.exists()) {
 
             String content = FileUtils.readFileToString(file);
             
             if(content == null || content.isEmpty()) {
 
-            	throw new InvalidBuildFileFormatException("'" + filepath + "' is not a valid file.");
+            	throw new InvalidBuildFileFormatException("ERROR: '" + filepath + "' is not a valid file.");
 
             } else {
 
@@ -89,6 +80,7 @@ public abstract class JsonVersionParser extends AbstractBuildDefinitionParser {
             	return AppVersion.parse(version);
             }
         } else {
+            logger.println("ERROR: file '"+file.getAbsolutePath()+"' does not exist!");
             throw new FileNotFoundException("'" + filepath + "' was not found.");
         }
 	}
