@@ -24,20 +24,21 @@
 
 package org.jenkinsci.plugins.SemanticVersioning.parsing;
 
-import org.apache.commons.io.FileUtils;
-import org.jenkinsci.plugins.SemanticVersioning.AppVersion;
-import org.jenkinsci.plugins.SemanticVersioning.InvalidBuildFileFormatException;
-
-import hudson.Extension;
-import hudson.model.AbstractBuild;
-import hudson.model.Descriptor;
-import org.jenkinsci.plugins.SemanticVersioning.Messages;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.commons.io.FileUtils;
+import org.jenkinsci.plugins.SemanticVersioning.AppVersion;
+import org.jenkinsci.plugins.SemanticVersioning.InvalidBuildFileFormatException;
+import org.jenkinsci.plugins.SemanticVersioning.Messages;
+
+import hudson.Extension;
+import hudson.FilePath;
+import hudson.model.Descriptor;
 
 @Extension
 public class BuildScalaParser extends AbstractBuildDefinitionParser {
@@ -46,8 +47,8 @@ public class BuildScalaParser extends AbstractBuildDefinitionParser {
 
     public BuildScalaParser() {   }
 
-	public AppVersion extractAppVersion(AbstractBuild<?,?> build) throws InvalidBuildFileFormatException, IOException {
-        String filename = build.getWorkspace() + BUILD_DEFINITION_FILENAME;
+	public AppVersion extractAppVersion(FilePath workspace, PrintStream logger) throws InvalidBuildFileFormatException, IOException {
+        String filename = workspace + BUILD_DEFINITION_FILENAME;
         File file = new File(filename);
         if(file.exists()) {
             Pattern extendsBuild = Pattern.compile(".*extends\\s+Build.*");

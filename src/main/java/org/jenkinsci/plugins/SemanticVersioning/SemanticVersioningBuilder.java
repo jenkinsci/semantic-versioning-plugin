@@ -24,11 +24,10 @@
 
 package org.jenkinsci.plugins.SemanticVersioning;
 
-import hudson.EnvVars;
 import hudson.Extension;
+import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.BuildListener;
-import hudson.model.EnvironmentContributingAction;
 import hudson.model.TaskListener;
 import hudson.model.AbstractBuild;
 import hudson.tasks.BuildStepDescriptor;
@@ -36,13 +35,15 @@ import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Builder;
 import hudson.util.ListBoxModel;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.HashMap;
-import java.util.Map;
 
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 
+import org.apache.commons.io.FileUtils;
 import org.jenkinsci.plugins.SemanticVersioning.naming.NamingStrategy;
 import org.jenkinsci.plugins.SemanticVersioning.parsing.BuildDefinitionParser;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -54,6 +55,7 @@ public class SemanticVersioningBuilder extends Builder {
     private NamingStrategy namingStrategy;
     private String envVariable = "BUILD_VERSION";
     private boolean useJenkinsBuildNumber;
+    private String semanticVersionFilename = "";
 
     @DataBoundConstructor
     public SemanticVersioningBuilder(String parser, String namingStrategy, boolean useJenkinsBuildNumber, String envVariable) {
@@ -98,27 +100,59 @@ public class SemanticVersioningBuilder extends Builder {
 
     @Override
     public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
-        SemanticVersioningProcesser semanticVersioningApp = new SemanticVersioningProcesser(
-                build,
-                this.parser,
-                this.useJenkinsBuildNumber,
-                Messages.SEMANTIC_VERSION_FILENAME);
-        AppVersion appVersion = semanticVersioningApp.determineSemanticVersion();
+    	
+        final PrintStream logger = listener.getLogger();
+        
+        SemanticVersioningCallable svc = new SemanticVersioningCallable();
         int buildNumber = -1;
         try {
         	buildNumber = Integer.parseInt(build.getEnvironment(TaskListener.NULL).get("BUILD_NUMBER"));
-		} catch (Exception e) {
-		}
-        try {
-        	Map<String,String> vars = new HashMap<String,String>();
-        	namingStrategy.exportNames(appVersion,vars,useJenkinsBuildNumber,buildNumber);
-        	
-        	build.addAction(new InjectVersionVarsAction(vars));
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new IOException(e);
-		}
+        } catch (Exception e) {
+        }
+        svc.setBuildNumber(buildNumber);
+    	svc.setEnv(envVariable);
+    	svc.setNamingStrategy(namingStrategy);
+    	svc.setParser(parser);
+    	svc.setUseBuildNumber(useJenkinsBuildNumber);
+        svc.setWorkspace(build.getWorkspace());
+
+		logger.println("SemanticVersioning callable ... ");
+    	SemanticVersioningResult svr = launcher.getChannel().call(svc);
+    	if(svr.getLog()!=null) {
+    		for(String s : svr.getLog()) {
+    			for(String sx : s.split("[\\n\\r]+")) {
+    				logger.println("SemanticVersioning REMOTE: "+sx);
+    			}
+    		}
+    	}
+
+    	if(svr.getVars()!=null) {
+    		logger.println("SemanticVersioning adding injecVars action ...");
+    		build.addAction(new InjectVersionVarsAction(svr.getVars()));
+    		logger.println("SemanticVersioning adding injecVars action ... DONE!");
+    	}
+    	
+    	
+		logger.println("SemanticVersioning callable ... DONE!");
+    	
+		logger.println("SemanticVersioning writing to file: "+svr.getVersion()+" ... ");
+    	writeVersionToFile(build, svr.getVersion());
+		logger.println("SemanticVersioning writing to file: "+svr.getVersion()+" ... DONE!");
+    	
+    	
         return true;
+    }
+    
+    
+    
+    private void writeVersionToFile(AbstractBuild<?,?> build, String reportedVersion) {
+        String filename = build.getRootDir() + "/" + Messages.SEMANTIC_VERSION_FILENAME;
+        File file = new File(filename);
+        try {
+            FileUtils.writeStringToFile(file, reportedVersion + "\n");
+        } catch (IOException e) {
+            System.out.println(e);
+        }
     }
 
     public String getEnvVariable() {
@@ -183,49 +217,5 @@ public class SemanticVersioningBuilder extends Builder {
             return super.newInstance(req, formData);
         }
     }
-	
-	
-	private class InjectVersionVarsAction implements EnvironmentContributingAction {
-		
-		private Map<String,String> versions;
-		
-		public InjectVersionVarsAction(Map<String, String> versions) {
-			super();
-			this.versions = versions;
-		}
-		
-
-		public String getIconFileName() {
-			return null;
-		}
-
-		public String getDisplayName() {
-			return Messages.DISPLAY_NAME;
-		}
-
-		public String getUrlName() {
-			return null;
-		}
-
-		public void buildEnvVars(AbstractBuild<?, ?> build, EnvVars env) {
-		    if (env == null) {
-	            return;
-	        }
-
-	        if (versions == null) {
-	            return;
-	        }
-
-	        for (Map.Entry<String, String> entry : versions.entrySet()) {
-	            String key = entry.getKey();
-	            String value = entry.getValue();
-	            if (key != null && value != null) {
-	            	env.put(key, value);
-	            }
-	        }
-	        
-		}
-		
-	}
 	
 }

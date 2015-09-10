@@ -47,6 +47,7 @@ import javax.xml.xpath.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 
 @Extension
 public class PomParser extends AbstractBuildDefinitionParser {
@@ -60,11 +61,11 @@ public class PomParser extends AbstractBuildDefinitionParser {
 	public PomParser(String filename) {
 	}
 
-	public AppVersion extractAppVersion(AbstractBuild<?, ?> build)
+	public AppVersion extractAppVersion(FilePath workspace, PrintStream logger)
 			throws IOException, InvalidBuildFileFormatException {
 		String version = null;
 
-		Document document = getPom((AbstractMavenBuild<?, ?>) build);
+		Document document = getPom(workspace);
 		XPath xPath = XPathFactory.newInstance().newXPath();
 		XPathExpression expression;
 		try {
@@ -83,17 +84,12 @@ public class PomParser extends AbstractBuildDefinitionParser {
 		return AppVersion.parse(version);
 	}
 
-	private Document getPom(AbstractMavenBuild<?, ?> mavenBuild)
+	private Document getPom(FilePath workspace)
 			throws InvalidBuildFileFormatException, IOException {
-		FilePath moduleRoot = mavenBuild.getModuleRoot();
-		MavenModuleSet project = (MavenModuleSet) mavenBuild.getProject();
+
 		FilePath pom = null;
 
-		if (moduleRoot.getName().endsWith(BUILD_FILE)) {
-			pom = moduleRoot;
-		} else {
-			pom = new FilePath(moduleRoot, project.getRootPOM());
-		}
+		pom = new FilePath(workspace, "pom.xml");
 
 		Document pomDocument = null;
 		try {

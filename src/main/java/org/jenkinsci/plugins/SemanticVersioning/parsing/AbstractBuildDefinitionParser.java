@@ -26,6 +26,9 @@ package org.jenkinsci.plugins.SemanticVersioning.parsing;
 
 import hudson.ExtensionList;
 import jenkins.model.Jenkins;
+
+import java.io.Serializable;
+
 import org.apache.tools.ant.ExtensionPoint;
 
 /**
@@ -34,7 +37,7 @@ import org.apache.tools.ant.ExtensionPoint;
  *
  */
 
-public abstract class AbstractBuildDefinitionParser extends ExtensionPoint implements BuildDefinitionParser {
+public abstract class AbstractBuildDefinitionParser extends ExtensionPoint implements BuildDefinitionParser, Serializable {
 	public static ExtensionList<BuildDefinitionParser> getParsers() {
 			return Jenkins.getInstance().getExtensionList(BuildDefinitionParser.class);
 	}

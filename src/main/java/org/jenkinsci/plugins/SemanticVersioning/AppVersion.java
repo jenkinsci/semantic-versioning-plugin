@@ -24,7 +24,10 @@
 
 package org.jenkinsci.plugins.SemanticVersioning;
 
-public class AppVersion {
+import java.io.Serializable;
+
+public class AppVersion implements Serializable {
+	
     public static final String MISSING_BUILD_NUMBER = "-1";
     private static final String SNAPSHOT = "SNAPSHOT";
     private final int major;

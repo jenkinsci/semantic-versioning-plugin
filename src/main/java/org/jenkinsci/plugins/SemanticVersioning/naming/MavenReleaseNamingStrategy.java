@@ -1,5 +1,6 @@
 package org.jenkinsci.plugins.SemanticVersioning.naming;
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -12,7 +13,7 @@ import org.jenkinsci.plugins.SemanticVersioning.Messages;
 import org.jenkinsci.plugins.SemanticVersioning.parsing.AbstractSemanticParserDescription;
 
 @Extension
-public class MavenReleaseNamingStrategy implements NamingStrategy {
+public class MavenReleaseNamingStrategy implements NamingStrategy, Serializable {
 
     private static Logger logger = Logger.getLogger(String.valueOf(AppVersion.class));
 
@@ -27,7 +28,7 @@ public class MavenReleaseNamingStrategy implements NamingStrategy {
 		};
 	}
 
-	public void exportNames(AppVersion current, Map<String,String> vars, boolean useBuildNumber, int buildNumber) {
+	public String exportNames(AppVersion current, Map<String,String> vars, boolean useBuildNumber, int buildNumber) {
 		logger.info("SemanticVersioningProcesser::getAppVersion -> maven naming: " +current.toJsonString());
 		String releaseVersion = current.getMajor()+"."+current.getMinor()+(useBuildNumber?"."+buildNumber:"");
 		String developmentVersion = current.getMajor()+"."+(useBuildNumber?current.getMinor()+"."+(buildNumber+1):""+(current.getMinor()+1))+"-SNAPSHOT";
@@ -35,6 +36,7 @@ public class MavenReleaseNamingStrategy implements NamingStrategy {
 		logger.info("SemanticVersioningProcesser::getAppVersion -> setting development version: " +developmentVersion);
 		vars.put("releaseVersion", releaseVersion);
 		vars.put("developmentVersion", developmentVersion);
+		return releaseVersion;
 	}
 
 }

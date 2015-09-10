@@ -24,18 +24,18 @@
 
 package org.jenkinsci.plugins.SemanticVersioning.parsing;
 
-import hudson.FilePath;
-import hudson.model.AbstractBuild;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-
-import net.sf.json.JSONObject;
+import java.io.PrintStream;
 
 import org.apache.commons.io.FileUtils;
 import org.jenkinsci.plugins.SemanticVersioning.AppVersion;
 import org.jenkinsci.plugins.SemanticVersioning.InvalidBuildFileFormatException;
+
+import hudson.FilePath;
+import hudson.model.AbstractBuild;
+import net.sf.json.JSONObject;
 
 public abstract class JsonVersionParser extends AbstractBuildDefinitionParser {
     
@@ -47,15 +47,21 @@ public abstract class JsonVersionParser extends AbstractBuildDefinitionParser {
         this.jsonpathVersion = jsonpathVersion;
     }
 
-    public AppVersion extractAppVersion(AbstractBuild<?, ?> build) throws IOException, InvalidBuildFileFormatException {
+    public AppVersion extractAppVersion(FilePath workspace, PrintStream logger) throws IOException, InvalidBuildFileFormatException {
     	        
-        File file = new File(build.getWorkspace().getRemote()+"/"+filepath);
+        File file = new File(workspace.getRemote()+"/"+filepath);
+
+        logger.println("looking for json file: "+file.getAbsolutePath()+" ("+file.exists()+")");
+        
+        logger.println("files in root");
+        File f = new File("/");
+        for(File fc : f.listFiles()) {
+        	logger.println(" - "+fc.getAbsolutePath());
+        }
         
         System.err.println(file.getAbsolutePath());
         
         if(file.exists()) {
-
-        	System.err.println("file exists: "+file.getAbsolutePath());
 
             String content = FileUtils.readFileToString(file);
             
@@ -68,9 +74,10 @@ public abstract class JsonVersionParser extends AbstractBuildDefinitionParser {
             	JSONObject jsonObject = JSONObject.fromObject( content );
             	JSONObject out = jsonObject;
             	String version = null;
+                logger.println("looking for json elements ... ");
             	for(String s : jsonpathVersion.split("\\.")) {
             		Object o = out.get(s);
-                    System.err.println(" ===> "+s+" / "+o);
+            		logger.println(" - "+s+" = "+o);
             		version = o.toString();
             		if(o!=null && o instanceof JSONObject) {
             			out = (JSONObject)o;
@@ -78,6 +85,7 @@ public abstract class JsonVersionParser extends AbstractBuildDefinitionParser {
             			break;
             		}
             	}
+        		logger.println("returning version: "+version);
             	return AppVersion.parse(version);
             }
         } else {

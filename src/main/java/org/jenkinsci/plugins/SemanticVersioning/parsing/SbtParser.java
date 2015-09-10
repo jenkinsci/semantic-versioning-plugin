@@ -24,19 +24,21 @@
 
 package org.jenkinsci.plugins.SemanticVersioning.parsing;
 
-import hudson.Extension;
-import hudson.model.AbstractBuild;
-import hudson.model.Descriptor;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.commons.io.FileUtils;
 import org.jenkinsci.plugins.SemanticVersioning.AppVersion;
 import org.jenkinsci.plugins.SemanticVersioning.InvalidBuildFileFormatException;
 import org.jenkinsci.plugins.SemanticVersioning.Messages;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import hudson.Extension;
+import hudson.FilePath;
+import hudson.model.Descriptor;
 
 @Extension
 public class SbtParser extends AbstractBuildDefinitionParser {
@@ -49,8 +51,8 @@ public class SbtParser extends AbstractBuildDefinitionParser {
     public SbtParser(String filename) {
     }
 
-    public AppVersion extractAppVersion(AbstractBuild<?,?> build) throws IOException, InvalidBuildFileFormatException {
-        File file = new File(BUILD_DEFINITION_FILENAME);
+    public AppVersion extractAppVersion(FilePath workspace, PrintStream logger) throws IOException, InvalidBuildFileFormatException {
+        File file = new File(workspace+"/"+BUILD_DEFINITION_FILENAME);
         if(file.exists()) {
             String content = FileUtils.readFileToString(file);
             if(content == null || content.length() <= 0) {
