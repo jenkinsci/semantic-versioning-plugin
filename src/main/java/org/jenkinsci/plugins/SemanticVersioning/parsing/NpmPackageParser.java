@@ -51,9 +51,4 @@ public class NpmPackageParser extends JsonVersionParser {
 		};
 	}
 	
-    public static void main(String[] args) throws IOException, InvalidBuildFileFormatException {
-    	NpmPackageParser npp = new NpmPackageParser();
-    	System.err.println(npp.extractAppVersion(null));
-	}
-	
 }

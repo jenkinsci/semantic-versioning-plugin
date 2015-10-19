@@ -33,9 +33,12 @@
      <f:entry title="Naming Strategies" field="namingStrategy">
         <f:select />
     </f:entry>
+    <!--
+     // because it doesn't do anything
      <f:entry title="Environment Variable" field="envVariable">
         <f:textbox />
     </f:entry>
+    -->
     <f:entry
             title="Build Number Source"
             field="useJenkinsBuildNumber"

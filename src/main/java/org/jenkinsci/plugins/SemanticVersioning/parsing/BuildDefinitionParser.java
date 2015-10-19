@@ -24,14 +24,15 @@
 
 package org.jenkinsci.plugins.SemanticVersioning.parsing;
 
-import hudson.model.Describable;
-import hudson.model.AbstractBuild;
-
 import java.io.IOException;
+import java.io.PrintStream;
 
 import org.jenkinsci.plugins.SemanticVersioning.AppVersion;
 import org.jenkinsci.plugins.SemanticVersioning.InvalidBuildFileFormatException;
 
+import hudson.FilePath;
+import hudson.model.Describable;
+
 public interface BuildDefinitionParser extends Describable<BuildDefinitionParser> {
-    AppVersion extractAppVersion(AbstractBuild<?,?> build) throws IOException, InvalidBuildFileFormatException;
+    AppVersion extractAppVersion(FilePath workspace, PrintStream logger) throws IOException, InvalidBuildFileFormatException;
 }
