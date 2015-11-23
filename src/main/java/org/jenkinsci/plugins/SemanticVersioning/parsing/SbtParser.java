@@ -47,10 +47,6 @@ public class SbtParser extends AbstractBuildDefinitionParser {
 
     public SbtParser() {}
     
-    @Deprecated
-    public SbtParser(String filename) {
-    }
-
     public AppVersion extractAppVersion(FilePath workspace, PrintStream logger) throws IOException, InvalidBuildFileFormatException {
         File file = new File(workspace+"/"+BUILD_DEFINITION_FILENAME);
         if(file.exists()) {
