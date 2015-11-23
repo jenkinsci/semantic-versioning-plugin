@@ -28,9 +28,9 @@ public class UntouchedNamingStrategy implements NamingStrategy, Serializable {
 	}
 
 	public String exportNames(AppVersion current, Map<String,String> vars, boolean useBuildNumber, int buildNumber) {
-		logger.info("SemanticVersioningProcesser::getAppVersion -> maven naming: " +current.toJsonString());
+		logger.info("SemanticVersioningProcessor::getAppVersion -> maven naming: " +current.toJsonString());
 		String releaseVersion = current.getOriginal();
-		logger.info("SemanticVersioningProcesser::getAppVersion -> setting release version: " +releaseVersion);
+		logger.info("SemanticVersioningProcessor::getAppVersion -> setting release version: " + releaseVersion);
 		vars.put("releaseVersion", releaseVersion);
 		return releaseVersion;
 	}

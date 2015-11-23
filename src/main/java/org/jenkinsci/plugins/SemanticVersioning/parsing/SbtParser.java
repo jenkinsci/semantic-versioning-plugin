@@ -48,7 +48,7 @@ public class SbtParser extends AbstractBuildDefinitionParser {
     public SbtParser() {}
     
     public AppVersion extractAppVersion(FilePath workspace, PrintStream logger) throws IOException, InvalidBuildFileFormatException {
-        File file = new File(workspace+"/"+BUILD_DEFINITION_FILENAME);
+        File file = new File(workspace + "/" + BUILD_DEFINITION_FILENAME);
         if(file.exists()) {
             String content = FileUtils.readFileToString(file);
             if(content == null || content.length() <= 0) {

@@ -62,15 +62,14 @@ public abstract class JsonVersionParser extends AbstractBuildDefinitionParser {
 
             } else {
 
-            	JSONObject jsonObject = JSONObject.fromObject( content );
-            	JSONObject out = jsonObject;
+                JSONObject out = JSONObject.fromObject( content );
             	String version = null;
                 logger.println("looking for json elements ... ");
             	for(String s : jsonpathVersion.split("\\.")) {
             		Object o = out.get(s);
             		logger.println(" - "+s+" = "+o);
             		version = o.toString();
-            		if(o!=null && o instanceof JSONObject) {
+            		if(o instanceof JSONObject) {
             			out = (JSONObject)o;
             		} else {
             			break;
@@ -80,12 +79,8 @@ public abstract class JsonVersionParser extends AbstractBuildDefinitionParser {
             	return AppVersion.parse(version);
             }
         } else {
-            logger.println("ERROR: file '"+file.getAbsolutePath()+"' does not exist!");
+            logger.println("ERROR: file '" + file.getAbsolutePath() + "' does not exist!");
             throw new FileNotFoundException("'" + filepath + "' was not found.");
         }
 	}
-    
-    
-    
-
 }

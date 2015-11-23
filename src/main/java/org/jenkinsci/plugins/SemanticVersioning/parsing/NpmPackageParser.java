@@ -26,10 +26,6 @@ package org.jenkinsci.plugins.SemanticVersioning.parsing;
 
 import hudson.Extension;
 import hudson.model.Descriptor;
-
-import java.io.IOException;
-
-import org.jenkinsci.plugins.SemanticVersioning.InvalidBuildFileFormatException;
 import org.jenkinsci.plugins.SemanticVersioning.Messages;
 
 @Extension

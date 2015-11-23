@@ -1,5 +1,11 @@
 package org.jenkinsci.plugins.SemanticVersioning;
 
+import hudson.FilePath;
+import hudson.remoting.Callable;
+import org.jenkinsci.plugins.SemanticVersioning.naming.NamingStrategy;
+import org.jenkinsci.plugins.SemanticVersioning.parsing.BuildDefinitionParser;
+import org.jenkinsci.remoting.RoleChecker;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -9,15 +15,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.jenkinsci.plugins.SemanticVersioning.naming.NamingStrategy;
-import org.jenkinsci.plugins.SemanticVersioning.parsing.BuildDefinitionParser;
-import org.jenkinsci.remoting.RoleChecker;
-
-import hudson.FilePath;
-import hudson.model.AbstractBuild;
-import hudson.model.TaskListener;
-import hudson.remoting.Callable;
 
 public class SemanticVersioningCallable implements Callable<SemanticVersioningResult,IOException>, Serializable {
 

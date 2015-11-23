@@ -127,9 +127,9 @@ public class SemanticVersioningBuilder extends Builder {
     	}
 
     	if(svr.getVars()!=null) {
-    		logger.println("SemanticVersioning adding injecVars action ...");
+    		logger.println("SemanticVersioning adding injectVars action ...");
     		build.addAction(new InjectVersionVarsAction(svr.getVars()));
-    		logger.println("SemanticVersioning adding injecVars action ... DONE!");
+    		logger.println("SemanticVersioning adding injectVars action ... DONE!");
     	}
     	
     	

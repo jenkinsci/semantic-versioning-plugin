@@ -57,10 +57,6 @@ public class PomParser extends AbstractBuildDefinitionParser {
     public PomParser() {
 	}
 
-	@Deprecated
-	public PomParser(String filename) {
-	}
-
 	public AppVersion extractAppVersion(FilePath workspace, PrintStream logger)
 			throws IOException, InvalidBuildFileFormatException {
 		String version = null;
@@ -87,24 +83,20 @@ public class PomParser extends AbstractBuildDefinitionParser {
 	private Document getPom(FilePath workspace)
 			throws InvalidBuildFileFormatException, IOException {
 
-		FilePath pom = null;
+		FilePath pom;
 
-		pom = new FilePath(workspace, "pom.xml");
+		pom = new FilePath(workspace, BUILD_FILE);
 
-		Document pomDocument = null;
+		Document pomDocument;
 		try {
 			pomDocument = pom.act(new FileCallable<Document>() {
-
-				/**
-				 * 
-				 */
 				private static final long serialVersionUID = 1L;
 
 				public Document invoke(File pom, VirtualChannel channel)
 						throws IOException, InterruptedException {
 
 					try {
-						DocumentBuilder documentBuilder = null;
+						DocumentBuilder documentBuilder;
 						documentBuilder = DocumentBuilderFactory.newInstance()
 								.newDocumentBuilder();
 						return documentBuilder.parse(pom);

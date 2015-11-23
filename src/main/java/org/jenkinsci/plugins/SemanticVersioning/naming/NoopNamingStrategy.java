@@ -29,7 +29,7 @@ public class NoopNamingStrategy implements NamingStrategy, Serializable {
 
 	public String exportNames(AppVersion current, Map<String,String> vars, boolean useBuildNumber, int buildNumber) {
 		// it's called "noop", d'oh!
-        logger.info("SemanticVersioningProcesser::getAppVersion -> not setting anything (NOOP): " + current.toJsonString());
+        logger.info("SemanticVersioningProcessor::getAppVersion -> not setting anything (NOOP): " + current.toJsonString());
         return current.toString();
 	}
 

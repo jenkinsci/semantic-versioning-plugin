@@ -14,7 +14,6 @@ class InjectVersionVarsAction implements EnvironmentContributingAction {
 		super();
 		this.versions = versions;
 	}
-	
 
 	public String getIconFileName() {
 		return null;
@@ -44,7 +43,5 @@ class InjectVersionVarsAction implements EnvironmentContributingAction {
             	env.put(key, value);
             }
         }
-        
 	}
-	
 }

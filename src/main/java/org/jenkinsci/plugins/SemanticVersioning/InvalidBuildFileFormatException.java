@@ -25,9 +25,6 @@
 package org.jenkinsci.plugins.SemanticVersioning;
 
 public class InvalidBuildFileFormatException extends Exception {
-    /**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	public InvalidBuildFileFormatException(String message) {
