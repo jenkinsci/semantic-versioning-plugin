@@ -45,6 +45,7 @@ import net.sf.json.JSONObject;
 
 import org.apache.commons.io.FileUtils;
 import org.jenkinsci.plugins.SemanticVersioning.naming.NamingStrategy;
+import org.jenkinsci.plugins.SemanticVersioning.naming.NoopNamingStrategy;
 import org.jenkinsci.plugins.SemanticVersioning.parsing.BuildDefinitionParser;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
@@ -55,7 +56,6 @@ public class SemanticVersioningBuilder extends Builder {
     private NamingStrategy namingStrategy;
     private String envVariable = "BUILD_VERSION";
     private boolean useJenkinsBuildNumber;
-    private String semanticVersionFilename = "";
 
     @DataBoundConstructor
     public SemanticVersioningBuilder(String parser, String namingStrategy, boolean useJenkinsBuildNumber, String envVariable) {
@@ -70,6 +70,7 @@ public class SemanticVersioningBuilder extends Builder {
         	this.namingStrategy = (NamingStrategy) Jenkins.getInstance().getExtensionList(namingStrategy).iterator().next();
         } catch (ClassNotFoundException e) {
         	e.printStackTrace();
+            this.namingStrategy = new NoopNamingStrategy();
         }
     }
 
