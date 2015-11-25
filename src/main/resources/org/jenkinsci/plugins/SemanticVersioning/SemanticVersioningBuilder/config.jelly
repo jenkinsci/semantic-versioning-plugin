@@ -23,22 +23,12 @@
 -->
 
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
-    <!--
-      Creates a text field that shows the value of the "name" property.
-      When submitted, it will be passed to the corresponding constructor parameter.
-    -->
      <f:entry title="Version Number Parser" field="parser">
         <f:select />
     </f:entry>
      <f:entry title="Naming Strategies" field="namingStrategy">
         <f:select />
     </f:entry>
-    <!--
-     // because it doesn't do anything
-     <f:entry title="Environment Variable" field="envVariable">
-        <f:textbox />
-    </f:entry>
-    -->
     <f:entry
             title="Build Number Source"
             field="useJenkinsBuildNumber"

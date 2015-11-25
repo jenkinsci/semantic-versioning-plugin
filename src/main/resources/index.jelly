@@ -2,5 +2,5 @@
   This view is used to render the installed plugins page.
 -->
 <div>
-  Jenkins Plugin that generates a semantic version from a build definition file (SBT, POM). Sets a configurable environment variable with the version. Includes a Dashboard column plugin that displays the semantic version of the last successful build.
+  Jenkins Plugin that generates a semantic version from a build definition file (SBT, POM, Bower, Scala.build). Includes a Dashboard column plugin that displays the semantic version of the last successful build.
 </div>
