@@ -53,7 +53,7 @@ import org.kohsuke.stapler.StaplerRequest;
 public class SemanticVersioningBuilder extends Builder {
 
     private BuildDefinitionParser parser;
-    private NamingStrategy namingStrategy;
+    private NamingStrategy namingStrategy = new NoopNamingStrategy();
     private String envVariable = "BUILD_VERSION";
     private boolean useJenkinsBuildNumber;
 

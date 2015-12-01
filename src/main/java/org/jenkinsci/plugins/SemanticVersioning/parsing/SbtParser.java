@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -42,7 +43,6 @@ import hudson.model.Descriptor;
 
 @Extension
 public class SbtParser extends AbstractBuildDefinitionParser {
-
     private static final String BUILD_DEFINITION_FILENAME = "build.sbt";
 
     public SbtParser() {}
@@ -59,6 +59,9 @@ public class SbtParser extends AbstractBuildDefinitionParser {
                 Matcher matcher = pattern.matcher(content);
                 if(matcher.find()) {
                     version = matcher.toMatchResult().group(1);
+
+                    this.logger.info("SbtParser::extractAppVersion => " + version);
+
                 } else {
                     throw new InvalidBuildFileFormatException("No version information found in " + BUILD_DEFINITION_FILENAME);
                 }

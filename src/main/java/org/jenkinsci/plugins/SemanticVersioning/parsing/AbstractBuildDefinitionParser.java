@@ -26,10 +26,10 @@ package org.jenkinsci.plugins.SemanticVersioning.parsing;
 
 import hudson.ExtensionList;
 import jenkins.model.Jenkins;
+import org.apache.tools.ant.ExtensionPoint;
 
 import java.io.Serializable;
-
-import org.apache.tools.ant.ExtensionPoint;
+import java.util.logging.Logger;
 
 /**
  * BuildDefinitionParser abstraction layer for better backward compatibility
@@ -38,6 +38,7 @@ import org.apache.tools.ant.ExtensionPoint;
  */
 
 public abstract class AbstractBuildDefinitionParser extends ExtensionPoint implements BuildDefinitionParser, Serializable {
+	protected static Logger logger = Logger.getLogger(String.valueOf(AbstractBuildDefinitionParser.class));
 	public static ExtensionList<BuildDefinitionParser> getParsers() {
 			return Jenkins.getInstance().getExtensionList(BuildDefinitionParser.class);
 	}

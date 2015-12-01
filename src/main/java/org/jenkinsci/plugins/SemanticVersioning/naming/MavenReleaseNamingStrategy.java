@@ -28,14 +28,13 @@ public class MavenReleaseNamingStrategy implements NamingStrategy, Serializable 
 	}
 
 	public String exportNames(AppVersion current, Map<String,String> vars, boolean useBuildNumber, int buildNumber) {
-		logger.info("SemanticVersioningProcessor::getAppVersion -> maven naming: " +current.toJsonString());
-		String releaseVersion = current.getMajor()+"."+current.getMinor()+(useBuildNumber?"."+buildNumber:"");
-		String developmentVersion = current.getMajor()+"."+(useBuildNumber?current.getMinor()+"."+(buildNumber+1):""+(current.getMinor()+1))+"-SNAPSHOT";
-		logger.info("SemanticVersioningProcessor::getAppVersion -> setting release version: " +releaseVersion);
-		logger.info("SemanticVersioningProcessor::getAppVersion -> setting development version: " +developmentVersion);
+		logger.info("SemanticVersioningProcessor::getAppVersion -> maven naming: " + current.toJsonString());
+		String releaseVersion = current.getMajor() + "." + current.getMinor() + (useBuildNumber ? "." + buildNumber : "");
+		String developmentVersion = current.getMajor() + "." + (useBuildNumber ? current.getMinor() + "." + (buildNumber + 1) : "" + (current.getMinor() + 1)) + "-SNAPSHOT";
+		logger.info("SemanticVersioningProcessor::getAppVersion -> setting release version: " + releaseVersion);
+		logger.info("SemanticVersioningProcessor::getAppVersion -> setting development version: " + developmentVersion);
 		vars.put("releaseVersion", releaseVersion);
 		vars.put("developmentVersion", developmentVersion);
 		return releaseVersion;
 	}
-
 }
