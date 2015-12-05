@@ -25,6 +25,8 @@
 package org.jenkinsci.plugins.SemanticVersioning.test;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.jenkinsci.plugins.SemanticVersioning.parsing.BuildDefinitionParser;
 
 import java.io.File;
@@ -34,67 +36,7 @@ import java.util.Collection;
 public abstract class ParserTests {
 
     protected final String version = "1.2.3-SNAPSHOT";
-    protected final Logger logger = LogManager.getLogger();
-
-//    @Test
-//    @WithoutJenkins
-//    public void testBuildFileNotFound() {
-//        logger.debug("####> testBuildFileNotFound");
-//        final String filename = "/non/existent/filename";
-//        try {
-//            BuildDefinitionParser buildParser = getParser(filename);
-//            buildParser.extractAppVersion();
-//            fail("FileNotFoundException should have been thrown!");
-//        } catch (FileNotFoundException e) {
-//            assertEquals("'" + filename + "' was not found.", e.getMessage());
-//        } catch (Exception e) {
-//            fail("FileNotFoundException should have been thrown! Instead got: " + e);
-//        }
-//    }
-//
-//    @Test
-//    @WithoutJenkins
-//    public void testBuildFileFoundNotValidBuildFile() {
-//        logger.debug("####> testBuildFileFoundNotValidBuildFile");
-//        final String filename = "/tmp/InvalidBuild.test";
-//        try {
-//            generateInvalidBuildFile(filename);
-//            BuildDefinitionParser buildParser = getParser(filename);
-//            buildParser.extractAppVersion();
-//        } catch (InvalidBuildFileFormatException e) {
-//            assertEquals(getExpectedInvalidBuildFileFormatExceptionMessage(filename), e.getMessage());
-//        } catch (Exception e) {
-//            fail("InvalidBuildFileFormatException should have been thrown! Instead got: " + e);
-//        }
-//    }
-//
-//    @Test
-//    @WithoutJenkins
-//    public void testValidBuildDefinitionWithMissingVersion() {
-//        logger.debug("####> testValidBuildDefinitionWithMissingVersion");
-//        final String filename = "/tmp/missingVersionBuild.test";
-//        try {
-//            generateBuildFileWithMissingVersion(filename);
-//            BuildDefinitionParser buildParser = getParser(filename);
-//            buildParser.extractAppVersion();
-//        } catch (InvalidBuildFileFormatException e) {
-//            assertEquals("No version information found in " + filename, e.getMessage());
-//        } catch (Exception e) {
-//            fail("InvalidBuildFileFormatException should have been thrown! Instead got: " + e);
-//        }
-//    }
-//
-//    @Test
-//    @WithoutJenkins
-//    public void testBuildFileFoundAndValid() throws IOException, InvalidBuildFileFormatException {
-//        logger.debug("####> testBuildFileFoundAndValid");
-//        final String filename = "/tmp/Build.test";
-//        generateValidBuildFile(filename);
-//        BuildDefinitionParser buildParser = getParser(filename);
-//        AppVersion parsedVersion = buildParser.extractAppVersion();
-//
-//        assertEquals(version, parsedVersion.toString());
-//    }
+    protected final Logger logger = LogManager.getLogger(ParserTests.class);
 
     protected abstract BuildDefinitionParser getParser(String filename);
     protected abstract void generateInvalidBuildFile(String filename) throws IOException;

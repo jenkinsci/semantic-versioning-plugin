@@ -35,7 +35,7 @@ public class SbtParserTests extends ParserTests {
 
     @Override
     protected BuildDefinitionParser getParser(String filename) {
-        return new SbtParser(filename);
+        return new SbtParser();
     }
 
     @Override

@@ -35,7 +35,7 @@ public class PomParserTests extends ParserTests {
 
     @Override
     protected BuildDefinitionParser getParser(String filename) {
-        return new PomParser(filename);
+        return new PomParser();
     }
 
     @Override

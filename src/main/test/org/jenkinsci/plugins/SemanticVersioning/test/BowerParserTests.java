@@ -26,6 +26,7 @@ package org.jenkinsci.plugins.SemanticVersioning;
 
 import org.jenkinsci.plugins.SemanticVersioning.parsing.BuildDefinitionParser;
 import org.jenkinsci.plugins.SemanticVersioning.parsing.BuildScalaParser;
+import org.jenkinsci.plugins.SemanticVersioning.test.ParserTests;
 
 import java.io.IOException;
 import java.util.ArrayList;
