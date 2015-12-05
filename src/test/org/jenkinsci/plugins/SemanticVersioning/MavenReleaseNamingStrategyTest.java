@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package org.jenkinsci.plugins.SemanticVersioning.test;
+package org.jenkinsci.plugins.SemanticVersioning;
 
 import org.jenkinsci.plugins.SemanticVersioning.AppVersion;
 import org.jenkinsci.plugins.SemanticVersioning.Messages;

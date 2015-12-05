@@ -22,35 +22,45 @@
  * THE SOFTWARE.
  */
 
-package org.jenkinsci.plugins.SemanticVersioning.test;
+package org.jenkinsci.plugins.SemanticVersioning;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.jenkinsci.plugins.SemanticVersioning.parsing.BuildDefinitionParser;
+import org.jenkinsci.plugins.SemanticVersioning.parsing.SbtParser;
 
-import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 
-public abstract class ParserTests {
+public class SbtParserTests extends ParserTests {
 
-    protected final String version = "1.2.3-SNAPSHOT";
-    protected final Logger logger = LogManager.getLogger(ParserTests.class);
+    @Override
+    protected BuildDefinitionParser getParser(String filename) {
+        return new SbtParser();
+    }
 
-    protected abstract BuildDefinitionParser getParser(String filename);
-    protected abstract void generateInvalidBuildFile(String filename) throws IOException;
-    protected abstract void generateValidBuildFile(String filename) throws IOException;
-    protected abstract void generateBuildFileWithMissingVersion(String filename) throws IOException;
-    protected abstract String getExpectedInvalidBuildFileFormatExceptionMessage(String filename);
+    @Override
+    protected void generateInvalidBuildFile(String filename) throws IOException {
+        Collection<String> lines = new ArrayList<String>();
+        writeLinesToFile(filename, lines);
+    }
 
-    protected void writeLinesToFile(String filename, Collection<String> lines) throws IOException {
-        File file = new File(filename);
-        if (file.exists()) {
-            file.delete();
-        }
-        file.setWritable(true);
+    @Override
+    protected void generateValidBuildFile(String filename) throws IOException {
+        Collection<String> lines = new ArrayList<String>();
+        lines.add("name := \"TestApp\"");
+        lines.add("version := \"" + version + "\"");
+        writeLinesToFile(filename, lines);
+    }
 
-        FileUtils.writeLines(file, lines);
+    @Override
+    protected void generateBuildFileWithMissingVersion(String filename) throws IOException {
+        Collection<String> lines = new ArrayList<String>();
+        lines.add("name := \"TestApp\"");
+        writeLinesToFile(filename, lines);
+    }
+
+    @Override
+    protected String getExpectedInvalidBuildFileFormatExceptionMessage(String filename) {
+        return "'" + filename + "' is not a valid SBT build definition file.";
     }
 }

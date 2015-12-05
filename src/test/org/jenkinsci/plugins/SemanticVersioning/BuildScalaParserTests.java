@@ -22,26 +22,26 @@
  * THE SOFTWARE.
  */
 
-package org.jenkinsci.plugins.SemanticVersioning.test;
+package org.jenkinsci.plugins.SemanticVersioning;
 
 import org.jenkinsci.plugins.SemanticVersioning.parsing.BuildDefinitionParser;
-import org.jenkinsci.plugins.SemanticVersioning.parsing.PomParser;
+import org.jenkinsci.plugins.SemanticVersioning.parsing.BuildScalaParser;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class PomParserTests extends ParserTests {
+public class BuildScalaParserTests extends ParserTests {
 
     @Override
     protected BuildDefinitionParser getParser(String filename) {
-        return new PomParser();
+        return new BuildScalaParser();
     }
 
     @Override
     protected void generateInvalidBuildFile(String filename) throws IOException {
         Collection<String> lines = new ArrayList<String>();
-        lines.add("<invalid></unvalid>");
+        lines.add("This is an invalid build file.");
 
         writeLinesToFile(filename, lines);
     }
@@ -49,12 +49,11 @@ public class PomParserTests extends ParserTests {
     @Override
     protected void generateValidBuildFile(String filename) throws IOException {
         Collection<String> lines = new ArrayList<String>();
-        lines.add("<project xmlns=\"http://maven.apache.org/POM/4.0.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd\">");
-        lines.add("<groupId>org.jenkins-ci.plugins</groupId>");
-        lines.add("<artifactId>SemanticVersioning</artifactId>");
-        lines.add("<version>" + version + "</version>");
-        lines.add("<packaging>hpi</packaging>");
-        lines.add("</project>");
+        lines.add("object ApplicationBuild extends Build {\n");
+        lines.add("val neo4jVersion          = \"1.9.2\"\n");
+        lines.add("val appName         = \"atomicsteampunk\"\n");
+        lines.add("val appVersion      = \"" + version + "\"");
+        lines.add("}\n");
 
         writeLinesToFile(filename, lines);
     }
@@ -62,17 +61,16 @@ public class PomParserTests extends ParserTests {
     @Override
     protected void generateBuildFileWithMissingVersion(String filename) throws IOException {
         Collection<String> lines = new ArrayList<String>();
-        lines.add("<project xmlns=\"http://maven.apache.org/POM/4.0.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd\">");
-        lines.add("<groupId>org.jenkins-ci.plugins</groupId>");
-        lines.add("<artifactId>SemanticVersioning</artifactId>");
-        lines.add("<packaging>hpi</packaging>");
-        lines.add("</project>");
+        lines.add("object ApplicationBuild extends Build {\n");
+        lines.add("val neo4jVersion          = \"1.9.2\"\n");
+        lines.add("val appName         = \"atomicsteampunk\"\n");
+        lines.add("}\n");
 
         writeLinesToFile(filename, lines);
     }
 
     @Override
     protected String getExpectedInvalidBuildFileFormatExceptionMessage(String filename) {
-        return filename + " is not a valid POM file.";
+        return "'" + filename + "' is not a valid build definition file.";
     }
 }
