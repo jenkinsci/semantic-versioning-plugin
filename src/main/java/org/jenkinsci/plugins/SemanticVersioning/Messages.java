@@ -36,6 +36,7 @@ public class Messages {
         public static final String SBT_BUILD_SCALA_PARSER = "SBT Build.scala Parser";
         public static final String BOWER_JSON_PARSER = "Bower bower.json Parser";
         public static final String NPM_JSON_PARSER = "NPM package.json Parser";
+        public static final String COMPOSER_JSON_PARSER = "Composer composer.json Parser";
     }
 
     public class ColumnDisplayStrategies {
