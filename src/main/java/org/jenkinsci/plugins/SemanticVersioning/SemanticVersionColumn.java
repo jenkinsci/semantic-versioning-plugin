@@ -51,7 +51,7 @@ public class SemanticVersionColumn extends ListViewColumn {
     @DataBoundConstructor
     public SemanticVersionColumn(String displayStrategyName) {
         try {
-            this.displayStrategy = (ColumnDisplayStrategy) Jenkins.getInstance().getExtensionList(displayStrategyName).iterator().next();
+            this.displayStrategy = (ColumnDisplayStrategy) Jenkins.getActiveInstance().getExtensionList(displayStrategyName).iterator().next();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }

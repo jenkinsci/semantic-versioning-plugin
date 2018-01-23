@@ -38,8 +38,8 @@ import java.util.logging.Logger;
  */
 
 public abstract class AbstractBuildDefinitionParser extends ExtensionPoint implements BuildDefinitionParser, Serializable {
-	protected static Logger logger = Logger.getLogger(String.valueOf(AbstractBuildDefinitionParser.class));
+	static final Logger logger = Logger.getLogger(String.valueOf(AbstractBuildDefinitionParser.class));
 	public static ExtensionList<BuildDefinitionParser> getParsers() {
-			return Jenkins.getInstance().getExtensionList(BuildDefinitionParser.class);
+			return Jenkins.getActiveInstance().getExtensionList(BuildDefinitionParser.class);
 	}
 }

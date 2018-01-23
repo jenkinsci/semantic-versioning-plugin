@@ -1,6 +1,7 @@
 <!--
   This view is used to render the installed plugins page.
 -->
+<?jelly escape-by-default='true'?>
 <div>
   Jenkins Plugin that generates a semantic version from a build definition file (SBT, POM, Bower, Scala.build). Includes a Dashboard column plugin that displays the semantic version of the last successful build.
 </div>

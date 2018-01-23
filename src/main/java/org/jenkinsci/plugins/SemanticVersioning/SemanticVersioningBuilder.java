@@ -62,12 +62,12 @@ public class SemanticVersioningBuilder extends Builder {
         this.useJenkinsBuildNumber = useJenkinsBuildNumber;
         this.envVariable = envVariable;
         try {
-            this.parser = (BuildDefinitionParser) Jenkins.getInstance().getExtensionList(parser).iterator().next();
+            this.parser = (BuildDefinitionParser) Jenkins.getActiveInstance().getExtensionList(parser).iterator().next();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
         try {
-        	this.namingStrategy = (NamingStrategy) Jenkins.getInstance().getExtensionList(namingStrategy).iterator().next();
+        	this.namingStrategy = (NamingStrategy) Jenkins.getActiveInstance().getExtensionList(namingStrategy).iterator().next();
         } catch (ClassNotFoundException e) {
         	e.printStackTrace();
             this.namingStrategy = new NoopNamingStrategy();
@@ -182,7 +182,7 @@ public class SemanticVersioningBuilder extends Builder {
          */
         public ListBoxModel doFillParserItems() {
             ListBoxModel parsersModel = new ListBoxModel();
-            for (BuildDefinitionParser parser : Jenkins.getInstance()
+            for (BuildDefinitionParser parser : Jenkins.getActiveInstance()
                     .getExtensionList(BuildDefinitionParser.class)) {
                 parsersModel.add(parser.getDescriptor().getDisplayName(), parser
                         .getClass().getCanonicalName());
@@ -192,7 +192,7 @@ public class SemanticVersioningBuilder extends Builder {
 
         public ListBoxModel doFillNamingStrategyItems() {
         	ListBoxModel namingStrategiesModel = new ListBoxModel();
-        	for (NamingStrategy namingStrategy : Jenkins.getInstance()
+        	for (NamingStrategy namingStrategy : Jenkins.getActiveInstance()
         			.getExtensionList(NamingStrategy.class)) {
         		namingStrategiesModel.add(namingStrategy.getDescriptor().getDisplayName(), namingStrategy.getClass().getCanonicalName());
         	}
