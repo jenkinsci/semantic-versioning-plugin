@@ -27,9 +27,6 @@ package org.jenkinsci.plugins.SemanticVersioning.parsing;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.FilePath.FileCallable;
-import hudson.maven.AbstractMavenBuild;
-import hudson.maven.MavenModuleSet;
-import hudson.model.AbstractBuild;
 import hudson.model.Descriptor;
 import hudson.remoting.VirtualChannel;
 
