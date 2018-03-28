@@ -30,7 +30,7 @@ public class Messages {
     public static final String SEMANTIC_VERSION_COLUMN_DISPLAY_NAME = "Semantic Version";
     public static final String UNKNOWN_VERSION = "Unknown";
 
-    public class Parsers {
+    public static class Parsers {
         public static final String SBT_BUILD_SBT_PARSER = "SBT build.sbt parser";
         public static final String MAVEN_POM_PARSER = "Maven Pom Parser";
         public static final String SBT_BUILD_SCALA_PARSER = "SBT Build.scala Parser";
@@ -39,14 +39,14 @@ public class Messages {
         public static final String COMPOSER_JSON_PARSER = "Composer composer.json Parser";
     }
 
-    public class ColumnDisplayStrategies {
+    public static class ColumnDisplayStrategies {
         public static final String LAST_JENKINS_BUILD_NUMBER_STRATEGY = "Show Last Jenkins Build Number";
         public static final String LAST_SUCCESSFUL_JENKINS_BUILD_NUMBER_STRATEGY = "Show Last Successful Jenkins Build Number";
         public static final String LAST_SUCCESSFUL_BUILD_VERSION_STRATEGY = "Show Last Successful Semantic Version";
         public static final String NA_STRATEGY = "Show 'N/A'";
     }
 
-    public class NamingStrategies {
+    public static class NamingStrategies {
     	public static final String NOOP_NAMING = "none";
     	public static final String MAVEN_RELEASE_DEVELOPMENT = "Maven, release and development version";
     	public static final String UNTOUCHED = "As found";

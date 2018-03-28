@@ -30,6 +30,6 @@ import org.apache.tools.ant.ExtensionPoint;
 
 public abstract class AbstractColumnDisplayStrategy extends ExtensionPoint implements ColumnDisplayStrategy {
     public static ExtensionList<ColumnDisplayStrategy> getStrategies() {
-        return Jenkins.getInstance().getExtensionList(ColumnDisplayStrategy.class);
+        return Jenkins.getActiveInstance().getExtensionList(ColumnDisplayStrategy.class);
     }
 }
