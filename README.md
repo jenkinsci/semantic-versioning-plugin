@@ -28,7 +28,7 @@ Pull / Feature Requests
 -----
 Both are welcome and will be prioritized and executed as time and resource allows.
 
-[ButlerImage]: http://jenkins-ci.org/sites/default/files/jenkins_logo.png
+[ButlerImage]: https://www.jenkins.io/sites/default/files/jenkins_logo.png
 [MIT License]: https://github.com/jenkinsci/jenkins/raw/master/LICENSE.txt
 [Jenkins]:https://www.jenkins.io/
-[Semantic Versioning]:http://semver.org/
+[Semantic Versioning]:https://semver.org/
