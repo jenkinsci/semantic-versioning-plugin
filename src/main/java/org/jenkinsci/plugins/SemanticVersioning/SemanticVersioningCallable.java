@@ -1,10 +1,9 @@
 package org.jenkinsci.plugins.SemanticVersioning;
 
 import hudson.FilePath;
-import hudson.remoting.Callable;
+import jenkins.security.MasterToSlaveCallable;
 import org.jenkinsci.plugins.SemanticVersioning.naming.NamingStrategy;
 import org.jenkinsci.plugins.SemanticVersioning.parsing.BuildDefinitionParser;
-import org.jenkinsci.remoting.RoleChecker;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -12,11 +11,12 @@ import java.io.PrintStream;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SemanticVersioningCallable implements Callable<SemanticVersioningResult,IOException>, Serializable {
+public class SemanticVersioningCallable extends MasterToSlaveCallable<SemanticVersioningResult, IOException> implements Serializable {
 
 	private static final long serialVersionUID = -2239554739563636620L;
 
@@ -29,13 +29,7 @@ public class SemanticVersioningCallable implements Callable<SemanticVersioningRe
 	private BuildDefinitionParser parser;
 	private NamingStrategy namingStrategy;
 	
-
-    
     public SemanticVersioningCallable() {
-	}
-	
-	@Override
-	public void checkRoles(RoleChecker arg0) throws SecurityException {
 	}
 
 	@Override
@@ -77,9 +71,7 @@ public class SemanticVersioningCallable implements Callable<SemanticVersioningRe
 		baos.flush();
 		
 		List<String> log = new ArrayList<String>();
-		for(String l : new String(baos.toByteArray(),"utf-8").split("[\\r\\n]+")) {
-			log.add(l);
-		}
+		Collections.addAll(log, baos.toString("utf-8").split("[\\r\\n]+"));
 		
 		out.setLog(log);
 		
