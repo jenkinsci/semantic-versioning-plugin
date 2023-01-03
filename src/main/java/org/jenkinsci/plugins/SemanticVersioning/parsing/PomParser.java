@@ -26,14 +26,13 @@ package org.jenkinsci.plugins.SemanticVersioning.parsing;
 
 import hudson.Extension;
 import hudson.FilePath;
-import hudson.FilePath.FileCallable;
 import hudson.model.Descriptor;
 import hudson.remoting.VirtualChannel;
 
+import jenkins.MasterToSlaveFileCallable;
 import org.jenkinsci.plugins.SemanticVersioning.AppVersion;
 import org.jenkinsci.plugins.SemanticVersioning.InvalidBuildFileFormatException;
 import org.jenkinsci.plugins.SemanticVersioning.Messages;
-import org.jenkinsci.remoting.RoleChecker;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -54,6 +53,7 @@ public class PomParser extends AbstractBuildDefinitionParser {
     public PomParser() {
 	}
 
+	@Override
 	public AppVersion extractAppVersion(FilePath workspace, PrintStream logger)
 			throws IOException, InvalidBuildFileFormatException {
 		String version = null;
@@ -86,7 +86,7 @@ public class PomParser extends AbstractBuildDefinitionParser {
 
 		Document pomDocument;
 		try {
-			pomDocument = pom.act(new FileCallable<Document>() {
+			pomDocument = pom.act(new MasterToSlaveFileCallable<Document>() {
 				private static final long serialVersionUID = 1L;
 
 				public Document invoke(File pom, VirtualChannel channel)
@@ -98,18 +98,11 @@ public class PomParser extends AbstractBuildDefinitionParser {
 								.newDocumentBuilder();
 						return documentBuilder.parse(pom);
 
-					} catch (SAXException e) {
-						throw new InterruptedException(pom
-								.getAbsolutePath()
-								+ " is not a valid POM file.");
-					} catch (ParserConfigurationException e) {
+					} catch (SAXException | ParserConfigurationException e) {
 						throw new InterruptedException(pom
 								.getAbsolutePath()
 								+ " is not a valid POM file.");
 					}
-				}
-
-				public void checkRoles(RoleChecker arg0) throws SecurityException {
 				}
 
 			});
