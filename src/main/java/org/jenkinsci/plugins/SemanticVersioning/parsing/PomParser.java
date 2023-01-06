@@ -36,10 +36,14 @@ import org.jenkinsci.plugins.SemanticVersioning.Messages;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.*;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -93,9 +97,10 @@ public class PomParser extends AbstractBuildDefinitionParser {
 						throws IOException, InterruptedException {
 
 					try {
-						DocumentBuilder documentBuilder;
-						documentBuilder = DocumentBuilderFactory.newInstance()
-								.newDocumentBuilder();
+						DocumentBuilderFactory df = DocumentBuilderFactory.newInstance();
+						df.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+						df.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+						DocumentBuilder documentBuilder = df.newDocumentBuilder();
 						return documentBuilder.parse(pom);
 
 					} catch (SAXException | ParserConfigurationException e) {
